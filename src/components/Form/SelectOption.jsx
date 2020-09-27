@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const SelectOption = ({ value, label }) => {
   return (
-    <option value={value}>{label}</option>
+    <option className="text-gray-700 bg-gray-100" value={value}>{label}</option>
   )
 }
 

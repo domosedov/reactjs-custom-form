@@ -3,7 +3,7 @@ import { FormContext } from './context'
 
 const FileUploadField = () => {
   const { state, dispatch } = useContext(FormContext)
-  const [imageSource, setImageSource] = useState(false)
+  const [imageSource, setImageSource] = useState('')
   const fileRef = useRef(null)
 
   const handleClick = (evt) => {
@@ -18,7 +18,6 @@ const FileUploadField = () => {
   }
 
   const handleDeleteClick = () => {
-    setImageSource(false)
     dispatch({ type: 'delete_photo' })
   }
 
@@ -29,6 +28,8 @@ const FileUploadField = () => {
         setImageSource(e.target.result)
       })
       reader.readAsDataURL(state.photo)
+    } else {
+      setImageSource('')
     }
   }, [state.photo])
 
@@ -37,12 +38,12 @@ const FileUploadField = () => {
       <label className="text-gray-800 font-light mb-1" htmlFor="photo">
         Фото
       </label>
-      {!imageSource ? (
+      {!state.photo ? (
         <div className="relative px-2 py-2 border-4 border-dashed border-gray-300 h-full flex items-center justify-center">
           <button
             type="button"
             onClick={handleClick}
-            className="h-full w-full text-indigo-400 font-light duration-200 flex items-center justify-center hover:text-indigo-500 hover:bg-indigo-100 focus:shadow-outline focus:outline-none"
+            className="h-full w-full text-indigo-400 font-light duration-200 flex flex-col items-center justify-center hover:text-indigo-500 hover:bg-indigo-100 focus:shadow-outline focus:outline-none"
           >
             <svg
               className="h-12 w-12"
@@ -56,6 +57,9 @@ const FileUploadField = () => {
                 clipRule="evenodd"
               />
             </svg>
+            <span className="text-sm upperc text-gray-500">
+              макcимальный размер файла - 5 MB
+            </span>
           </button>
           <input
             className="absolute h-0 w-0 opacity-0 top-0 left-0"
@@ -109,9 +113,7 @@ const FileUploadField = () => {
               <div className="text-xs mb-2 text-gray-600 overflow-x-auto overflow-y-hidden">
                 {state.photo.type}
               </div>
-              <div className="text-sm text-gray-900 font-light">
-                Размер файла
-              </div>
+              <div className="text-sm text-gray-900 font-light">Размер файла</div>
               <div className="text-xs mb-2 text-gray-600 overflow-x-auto overflow-y-hidden">
                 {`${(state.photo.size / 1000).toFixed(2)} KB`}
               </div>

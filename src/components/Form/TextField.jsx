@@ -17,7 +17,7 @@ const TextField = ({ label, name, required = false, type = 'text' }) => {
         {label}{required && <span className="text-red-600">*</span>}
       </label>
       <input
-        className="border px-2 py-2 rounded md:px-1 md:py-1 duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline text-gray-700 italic"
+        className="border px-2 py-2 rounded md:px-1 md:py-1 duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline text-gray-700 font-light"
         type={type}
         id={name}
         name={name}

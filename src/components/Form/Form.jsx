@@ -10,6 +10,7 @@ import RadioGroupField from './RadioGroupField'
 import SelectField from './SelectField'
 import AgreeCheckboxField from './AgreeCheckboxField'
 import FileUploadField from './FileUploadField'
+import CheckboxGroupField from './CheckboxGroupField'
 
 const subjects = {
   multiple: true,
@@ -39,10 +40,33 @@ const genders = {
   ]
 }
 
+const metroes = {
+  multiple: false,
+  name: 'metro',
+  options: [
+    { label: 'Планерная', value: 1 },
+    { label: 'Сходненская', value: 2 }
+  ]
+}
+
+const places = {
+  multiple: true,
+  name: 'places',
+  options: [
+    { label: 'У репетитора', value: 11 },
+    { label: 'У ученика', value: 22 },
+    { label: 'Дистанционно', value: 33 }
+  ]
+}
+
 const reducer = (draft, action) => {
   switch (action.type) {
     case 'change_subjects': {
       draft.subjects[action.payload] = !draft.subjects[action.payload]
+      break
+    }
+    case 'change_places': {
+      draft.places[action.payload] = !draft.places[action.payload]
       break
     }
     case 'change_lastname': {
@@ -61,6 +85,14 @@ const reducer = (draft, action) => {
       draft.dateOfBirth = action.payload
       break
     }
+    case 'change_phone': {
+      draft.phone = action.payload
+      break
+    }
+    case 'change_email': {
+      draft.email = action.payload
+      break
+    }
     case 'change_education': {
       draft.education = action.payload
       break
@@ -75,6 +107,10 @@ const reducer = (draft, action) => {
     }
     case 'change_city': {
       draft.city = action.payload
+      break
+    }
+    case 'change_metro': {
+      draft.metro = action.payload
       break
     }
     case 'change_agreeOffer': {
@@ -99,11 +135,14 @@ const generateInitialState = (...selectOptions) => {
     lastname: '',
     name: '',
     middlename: '',
+    photo: null,
+    gender: '',
     dateOfBirth: '',
+    phone: '',
+    email: '',
     education: '',
     experiance: 0,
-    agreeOffer: false,
-    photo: null
+    agreeOffer: false
   }
 
   if (selectOptions.length) {
@@ -124,7 +163,7 @@ const generateInitialState = (...selectOptions) => {
 
 const Form = () => {
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
-    return generateInitialState(subjects, cities, genders)
+    return generateInitialState(subjects, cities, metroes, genders, places)
   })
 
   const handleSubmit = evt => {
@@ -154,7 +193,76 @@ const Form = () => {
               />
             </div>
             <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <FileUploadField/>
+              <FileUploadField />
+            </div>
+          </div>
+
+          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+              <RadioGroupField field={genders} label={'Пол'} required={true} />
+            </div>
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+              <DatePickerField
+                label={'Дата рождения'}
+                name={'dateOfBirth'}
+                required={true}
+              />
+            </div>
+          </div>
+
+          <div className="col-span-6 grid grid-cols-2 gap-4">
+            <div className="col-start-1 col-end-2">
+              <SelectField
+                field={cities}
+                label={'Город'}
+                name={'city'}
+                required={true}
+              />
+            </div>
+            <div className="col-start-2 col-end-3">
+              <SelectField
+                field={metroes}
+                label={'Метро'}
+                name={'metro'}
+                required={true}
+              />
+            </div>
+          </div>
+
+          <div className="col-span-6 grid grid-cols-2 gap-4">
+            <div className="col-start-1 col-end-2">
+              <TextField
+                label={'Район'}
+                name={'area'}
+                type={'text'}
+                required={false}
+              />
+            </div>
+            <div className="col-start-2 col-end-3">
+              <CheckboxGroupField
+                field={places}
+                label={'Занятия проводятся'}
+                required={true}
+              />
+            </div>
+          </div>
+
+          <div className="col-span-6 grid grid-cols-2 gap-4">
+            <div className="col-start-1 col-end-2">
+              <TextField
+                label={'Телефон'}
+                name={'phone'}
+                type={'tel'}
+                required={true}
+              />
+            </div>
+            <div className="col-start-2 col-end-3">
+              <TextField
+                label={'Email'}
+                name={'email'}
+                type={'email'}
+                required={true}
+              />
             </div>
           </div>
 
@@ -170,23 +278,18 @@ const Form = () => {
             name={'education'}
             required={true}
           />
-          <DatePickerField
-            label={'Дата рождения'}
-            name={'dateOfBirth'}
-            required={true}
-          />
-          <RadioGroupField field={genders} />
-          <SelectField field={cities} />
+
           <AgreeCheckboxField
             label={'Согласен'}
             name={'agreeOffer'}
             required={true}
           />
           <MultiSelect field={subjects} />
+
+          <input type="file" className="bg-green-200" />
           <button className="px-2 py-1 bg-blue-700 text-white rounded">
             Submit
           </button>
-          <input type="file" className="bg-green-200"/>
         </form>
       </div>
     </FormContext.Provider>

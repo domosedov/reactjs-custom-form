@@ -1,9 +1,9 @@
 import React, { useContext, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import CheckboxButton from './CheckboxButton'
 import { FormContext } from './context'
-import RadioButton from './RadioButton'
 
-const RadioGroupField = ({ field, label, required = false }) => {
+const CheckboxGroupField = ({ field, label, required = false }) => {
   const { state, dispatch } = useContext(FormContext)
 
   const handleChange = useCallback(
@@ -20,16 +20,15 @@ const RadioGroupField = ({ field, label, required = false }) => {
         {label}
         {required && <span className="text-red-600">*</span>}
       </span>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-center gap-2 flex-wrap">
         {field.options.map((item) => (
-          <RadioButton
-            checkedValue={state[field.name]}
+          <CheckboxButton
+            checkedValue={state[field.name][item.value]}
             name={field.name}
             label={item.label}
             key={item.value}
             value={item.value}
             handleChange={handleChange}
-            required={required}
           />
         ))}
       </div>
@@ -37,7 +36,7 @@ const RadioGroupField = ({ field, label, required = false }) => {
   )
 }
 
-RadioGroupField.propTypes = {
+CheckboxGroupField.propTypes = {
   field: PropTypes.shape({
     multiple: PropTypes.bool,
     name: PropTypes.string,
@@ -52,4 +51,4 @@ RadioGroupField.propTypes = {
   label: PropTypes.string
 }
 
-export default RadioGroupField
+export default CheckboxGroupField
