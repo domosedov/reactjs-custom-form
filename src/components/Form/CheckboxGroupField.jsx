@@ -8,7 +8,6 @@ const CheckboxGroupField = ({ field, label, required = false }) => {
 
   const handleChange = useCallback(
     (evt) => {
-      console.log(evt.target.value)
       dispatch({ type: `change_${field.name}`, payload: evt.target.value })
     },
     [dispatch, field.name]

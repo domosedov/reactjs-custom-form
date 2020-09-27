@@ -18,7 +18,26 @@ const subjects = {
   options: [
     { label: 'Русский язык', value: 1 },
     { label: 'Математика', value: 2 },
-    { label: 'Обществознание', value: 3 }
+    { label: 'Обществознание', value: 3 },
+    { label: 'История', value: 312 },
+    { label: 'Компьютерная грамотность', value: 23 },
+    { label: 'Английский язык', value: 643 },
+    { label: 'Русский язык', value: 112 },
+    { label: 'Математика', value: 232 },
+    { label: 'Обществознание', value: 112433 },
+    { label: 'История', value: 31243652 },
+    { label: 'Компьютерная грамотность', value: 2463 },
+    { label: 'Английский язык', value: 64453633 }
+  ]
+}
+
+const students = {
+  multiple: true,
+  name: 'students',
+  options: [
+    { label: 'Дошкольник', value: 1 },
+    { label: 'Начальная школа', value: 2 },
+    { label: '2-Класс', value: 3 }
   ]
 }
 
@@ -163,7 +182,7 @@ const generateInitialState = (...selectOptions) => {
 
 const Form = () => {
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
-    return generateInitialState(subjects, cities, metroes, genders, places)
+    return generateInitialState(subjects, students, cities, metroes, genders, places)
   })
 
   const handleSubmit = evt => {
@@ -266,6 +285,15 @@ const Form = () => {
             </div>
           </div>
 
+          <div className="col-span-6 grid grid-cols-2 gap-4">
+            <div className="col-start-1 col-end-2">
+              <MultiSelect field={subjects} label={'Предметы'} required={true}/>
+            </div>
+            <div className="col-start-2 col-end-3">
+              <MultiSelect field={students} label={'Ученики'} required={true} />
+            </div>
+          </div>
+
           <NumberField
             label={'Стаж'}
             min={1900}
@@ -284,7 +312,6 @@ const Form = () => {
             name={'agreeOffer'}
             required={true}
           />
-          <MultiSelect field={subjects} />
 
           <input type="file" className="bg-green-200" />
           <button className="px-2 py-1 bg-blue-700 text-white rounded">

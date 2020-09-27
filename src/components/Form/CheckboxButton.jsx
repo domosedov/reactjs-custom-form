@@ -29,7 +29,7 @@ const CheckboxButton = ({
       onKeyPress={handleFakeRadioButtonKeyPress}
       onClick={handleFakeRadioButtonClick}
       tabIndex="0"
-      className="bg-white text-gray-700 relative px-2 py-1 font-light rounded border text-center duration-200 hover:text-gray-800 hover:border-teal-200 focus:outline-none focus:shadow-outline"
+      className="cursor-pointer bg-white text-gray-700 relative px-2 py-1 font-light rounded border text-center duration-200 hover:text-gray-800 hover:border-teal-200 focus:outline-none focus:shadow-outline"
     >
       <label
         className="flex items-center text-sm pointer-events-none select-none"

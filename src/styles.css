@@ -3,3 +3,14 @@
 @tailwind components;
 
 @tailwind utilities;
+
+@layer utilities {
+    @responsive {
+        .min-h-10 {
+            min-height: 2.5rem;
+        }
+        .max-h-64 {
+            max-height: 16rem;
+        }
+    }
+}
