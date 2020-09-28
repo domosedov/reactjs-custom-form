@@ -19,7 +19,7 @@ const SelectField = ({ field, label, name, required }) => {
       <select
         className={`${
           state[name] === '' ? 'text-gray-500' : ' text-gray-700'
-        } block border bg-white rounded md:px-1 md:py-1 duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline font-light`}
+        } px-2 py-2 block border bg-white rounded duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline font-light`}
         name={name}
         id={field.name}
         onChange={handleChange}

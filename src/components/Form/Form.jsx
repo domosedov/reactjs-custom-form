@@ -50,6 +50,15 @@ const cities = {
   ]
 }
 
+const statuses = {
+  multiple: false,
+  name: 'status',
+  options: [
+    { label: 'Школьный учитель', value: 3241 },
+    { label: 'Частный преподаватель', value: 25345 }
+  ]
+}
+
 const genders = {
   multiple: false,
   name: 'gender',
@@ -82,6 +91,10 @@ const reducer = (draft, action) => {
   switch (action.type) {
     case 'change_subjects': {
       draft.subjects[action.payload] = !draft.subjects[action.payload]
+      break
+    }
+    case 'change_students': {
+      draft.students[action.payload] = !draft.students[action.payload]
       break
     }
     case 'change_places': {
@@ -120,6 +133,10 @@ const reducer = (draft, action) => {
       draft.experiance = action.payload
       break
     }
+    case 'change_rate': {
+      draft.rate = action.payload
+      break
+    }
     case 'change_gender': {
       draft.gender = action.payload
       break
@@ -130,6 +147,10 @@ const reducer = (draft, action) => {
     }
     case 'change_metro': {
       draft.metro = action.payload
+      break
+    }
+    case 'change_status': {
+      draft.status = action.payload
       break
     }
     case 'change_agreeOffer': {
@@ -161,6 +182,7 @@ const generateInitialState = (...selectOptions) => {
     email: '',
     education: '',
     experiance: 0,
+    rate: 0,
     agreeOffer: false
   }
 
@@ -182,7 +204,7 @@ const generateInitialState = (...selectOptions) => {
 
 const Form = () => {
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
-    return generateInitialState(subjects, students, cities, metroes, genders, places)
+    return generateInitialState(subjects, students, cities, metroes, genders, places, statuses)
   })
 
   const handleSubmit = evt => {
@@ -229,8 +251,8 @@ const Form = () => {
             </div>
           </div>
 
-          <div className="col-span-6 grid grid-cols-2 gap-4">
-            <div className="col-start-1 col-end-2">
+          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
               <SelectField
                 field={cities}
                 label={'Город'}
@@ -238,7 +260,7 @@ const Form = () => {
                 required={true}
               />
             </div>
-            <div className="col-start-2 col-end-3">
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
               <SelectField
                 field={metroes}
                 label={'Метро'}
@@ -248,8 +270,8 @@ const Form = () => {
             </div>
           </div>
 
-          <div className="col-span-6 grid grid-cols-2 gap-4">
-            <div className="col-start-1 col-end-2">
+          <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
               <TextField
                 label={'Район'}
                 name={'area'}
@@ -257,7 +279,7 @@ const Form = () => {
                 required={false}
               />
             </div>
-            <div className="col-start-2 col-end-3">
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
               <CheckboxGroupField
                 field={places}
                 label={'Занятия проводятся'}
@@ -266,8 +288,8 @@ const Form = () => {
             </div>
           </div>
 
-          <div className="col-span-6 grid grid-cols-2 gap-4">
-            <div className="col-start-1 col-end-2">
+          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
               <TextField
                 label={'Телефон'}
                 name={'phone'}
@@ -275,7 +297,7 @@ const Form = () => {
                 required={true}
               />
             </div>
-            <div className="col-start-2 col-end-3">
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
               <TextField
                 label={'Email'}
                 name={'email'}
@@ -285,38 +307,80 @@ const Form = () => {
             </div>
           </div>
 
-          <div className="col-span-6 grid grid-cols-2 gap-4">
-            <div className="col-start-1 col-end-2">
-              <MultiSelect field={subjects} label={'Предметы'} required={true}/>
+          <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+              <MultiSelect
+                field={subjects}
+                label={'Предметы'}
+                required={true}
+              />
             </div>
-            <div className="col-start-2 col-end-3">
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
               <MultiSelect field={students} label={'Ученики'} required={true} />
             </div>
           </div>
 
-          <NumberField
-            label={'Стаж'}
-            min={1900}
-            max={new Date().getUTCFullYear()}
-            required={true}
-            name={'experiance'}
-          />
-          <TextAreaField
-            label={'Образование'}
-            name={'education'}
-            required={true}
-          />
+          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+              <SelectField
+                field={statuses}
+                label={'Ваш статус'}
+                name={'status'}
+                required={true}
+              />
+            </div>
+            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+              <NumberField
+                label={'Год начала деятельности'}
+                min={1900}
+                max={new Date().getUTCFullYear()}
+                required={true}
+                name={'experiance'}
+              />
+            </div>
+          </div>
 
-          <AgreeCheckboxField
-            label={'Согласен'}
-            name={'agreeOffer'}
-            required={true}
-          />
+          <div className="col-span-6">
+            <TextAreaField
+              label={'Образование'}
+              name={'education'}
+              required={true}
+            />
+          </div>
 
-          <input type="file" className="bg-green-200" />
-          <button className="px-2 py-1 bg-blue-700 text-white rounded">
-            Submit
-          </button>
+          <div className="col-span-6">
+            <input type="file" className="bg-green-200" />
+          </div>
+
+          <div className="col-span-6">
+            <TextAreaField
+              label={'Дополнительная информация'}
+              name={'description'}
+              required={false}
+            />
+          </div>
+
+          <div className="col-span-6 grid grid-cols-4 grid-rows-2 gap-4">
+            <div className="col-start-1 col-end-5 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+              <NumberField
+                label={'Ваша ставка (₽/час)'}
+                min={100}
+                max={500000}
+                step={10}
+                required={true}
+                name={'rate'}
+              />
+            </div>
+            <div className="col-start-1 col-end-5 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+              <AgreeCheckboxField name={'agreeOffer'} required={true} />
+            </div>
+          </div>
+
+          <div className="col-span-6">
+            <button className="px-2 py-1 bg-blue-700 text-white rounded">
+              Submit
+            </button>
+          </div>
         </form>
       </div>
     </FormContext.Provider>

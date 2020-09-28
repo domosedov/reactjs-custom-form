@@ -19,7 +19,7 @@ const CheckboxGroupField = ({ field, label, required = false }) => {
         {label}
         {required && <span className="text-red-600">*</span>}
       </span>
-      <div className="flex items-center justify-center gap-2 flex-wrap">
+      <div className="flex flex-row items-start gap-2 flex-wrap">
         {field.options.map((item) => (
           <CheckboxButton
             checkedValue={state[field.name][item.value]}
