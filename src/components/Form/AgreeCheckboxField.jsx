@@ -51,33 +51,6 @@ const AgreeCheckboxField = ({ name, required = false }) => {
           </svg>
         </div>
       </div>
-
-      {/* <label
-        onKeyPress={handleFakeRadioButtonKeyPress}
-        onClick={handleFakeRadioButtonClick}
-        className="relative focus:shadow-outline inline-flex"
-        htmlFor={name}
-        tabIndex="0"
-      >
-        Согласен
-        <div
-          className={`${
-            state.agreeOffer ? 'bg-green-400' : 'bg-red-600'
-          } w-8 h-8 pointer-events-none`}
-        ></div>
-        <input
-          ref={checkboxRef}
-          className="absolute h-0 w-0 opacity-0 top-0 left-0"
-          type="checkbox"
-          name={name}
-          id={name}
-          value={name}
-          onChange={handleChange}
-          checked={state.agreeOffer}
-          required={required}
-          tabIndex="-1"
-        />
-      </label> */}
     </div>
   )
 }

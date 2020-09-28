@@ -11,6 +11,7 @@ import SelectField from './SelectField'
 import AgreeCheckboxField from './AgreeCheckboxField'
 import FileUploadField from './FileUploadField'
 import CheckboxGroupField from './CheckboxGroupField'
+import UploadFilesField from './UploadFilesField'
 
 const subjects = {
   multiple: true,
@@ -89,18 +90,6 @@ const places = {
 
 const reducer = (draft, action) => {
   switch (action.type) {
-    case 'change_subjects': {
-      draft.subjects[action.payload] = !draft.subjects[action.payload]
-      break
-    }
-    case 'change_students': {
-      draft.students[action.payload] = !draft.students[action.payload]
-      break
-    }
-    case 'change_places': {
-      draft.places[action.payload] = !draft.places[action.payload]
-      break
-    }
     case 'change_lastname': {
       draft.lastname = action.payload
       break
@@ -111,6 +100,18 @@ const reducer = (draft, action) => {
     }
     case 'change_middlename': {
       draft.middlename = action.payload
+      break
+    }
+    case 'set_photo': {
+      draft.photo = action.payload
+      break
+    }
+    case 'delete_photo': {
+      draft.photo = null
+      break
+    }
+    case 'change_gender': {
+      draft.gender = action.payload
       break
     }
     case 'change_dateOfBirth': {
@@ -125,44 +126,60 @@ const reducer = (draft, action) => {
       draft.email = action.payload
       break
     }
-    case 'change_education': {
-      draft.education = action.payload
-      break
-    }
-    case 'change_experiance': {
-      draft.experiance = action.payload
-      break
-    }
-    case 'change_rate': {
-      draft.rate = action.payload
-      break
-    }
-    case 'change_gender': {
-      draft.gender = action.payload
-      break
-    }
     case 'change_city': {
       draft.city = action.payload
+      break
+    }
+    case 'change_area': {
+      draft.area = action.payload
       break
     }
     case 'change_metro': {
       draft.metro = action.payload
       break
     }
+    case 'change_places': {
+      draft.places[action.payload] = !draft.places[action.payload]
+      break
+    }
     case 'change_status': {
       draft.status = action.payload
       break
     }
+    case 'change_subjects': {
+      draft.subjects[action.payload] = !draft.subjects[action.payload]
+      break
+    }
+    case 'change_students': {
+      draft.students[action.payload] = !draft.students[action.payload]
+      break
+    }
+    case 'change_rate': {
+      draft.rate = action.payload
+      break
+    }
+    case 'change_experiance': {
+      draft.experiance = action.payload
+      break
+    }
+    case 'change_education': {
+      draft.education = action.payload
+      break
+    }
+    case 'change_description': {
+      draft.description = action.payload
+      break
+    }
+    case 'set_documents': {
+      draft.documents = action.payload
+      break
+    }
+    case 'empty_documents': {
+      draft.documents = []
+      break
+    }
     case 'change_agreeOffer': {
       draft.agreeOffer = !draft.agreeOffer
-      break
-    }
-    case 'set_photo': {
-      draft.photo = action.payload
-      break
-    }
-    case 'delete_photo': {
-      draft.photo = null
       break
     }
   }
@@ -180,9 +197,12 @@ const generateInitialState = (...selectOptions) => {
     dateOfBirth: '',
     phone: '',
     email: '',
-    education: '',
-    experiance: 0,
+    area: '',
     rate: 0,
+    experiance: 0,
+    education: '',
+    description: '',
+    documents: [],
     agreeOffer: false
   }
 
@@ -215,7 +235,7 @@ const Form = () => {
 
   return (
     <FormContext.Provider value={{ state, dispatch }}>
-      <div className="bg-white rounded-lg shadow-lg mx-auto lg:w-10/12 xl:w-8/12">
+      <div className="bg-white rounded-lg shadow-lg mx-auto lg:w-10/12 xl:w-8/12 my-4">
         <h1 className="bg-indigo-600 uppercase tracking-tight text-gray-100 font-semibold text-2xl text-center px-4 py-4 rounded-t-lg">
           Создать профиль репетитора
         </h1>
@@ -349,7 +369,7 @@ const Form = () => {
           </div>
 
           <div className="col-span-6">
-            <input type="file" className="bg-green-200" />
+            <UploadFilesField/>
           </div>
 
           <div className="col-span-6">
@@ -377,8 +397,8 @@ const Form = () => {
           </div>
 
           <div className="col-span-6">
-            <button className="px-2 py-1 bg-blue-700 text-white rounded">
-              Submit
+            <button className="block mx-auto px-4 py-2 bg-indigo-600 text-white rounded duration-200 hover:bg-indigo-500 focus:outline-none focus:shadow-outline">
+              Отправить
             </button>
           </div>
         </form>

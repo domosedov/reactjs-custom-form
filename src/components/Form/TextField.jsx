@@ -23,7 +23,6 @@ const TextField = ({ label, name, required = false, type = 'text' }) => {
         name={name}
         value={state[name]}
         onChange={handleChange}
-        required={required}
       />
     </div>
   )

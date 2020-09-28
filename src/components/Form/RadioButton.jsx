@@ -46,7 +46,6 @@ const RadioButton = ({
           onChange={handleChange}
           value={value}
           checked={String(value) === checkedValue}
-          required={required}
           tabIndex="-1"
         />
       </label>

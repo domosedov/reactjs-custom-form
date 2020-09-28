@@ -16,7 +16,7 @@ const MultiSelectOption = ({
     }
   }
 
-  const handleFakeRadioButtonClick = (evt) => {
+  const handleFakeRadioButtonClick = () => {
     checkboxRef.current.click()
   }
   return (
@@ -68,7 +68,6 @@ const MultiSelectOption = ({
           onChange={handleChange}
           value={value}
           checked={checkedValue}
-          required={required}
           tabIndex="-1"
         />
       </label>

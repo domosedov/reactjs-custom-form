@@ -25,7 +25,6 @@ const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required =
         max={max}
         step={step}
         onChange={handleChange}
-        required={required}
       />
     </div>
   )

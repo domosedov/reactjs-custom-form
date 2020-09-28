@@ -24,7 +24,6 @@ const SelectField = ({ field, label, name, required }) => {
         id={field.name}
         onChange={handleChange}
         value={state[name]}
-        required={required}
       >
         <Fragment>
           <option

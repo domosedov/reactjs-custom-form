@@ -28,7 +28,6 @@ const RadioGroupField = ({ field, label, required = false }) => {
             key={item.value}
             value={item.value}
             handleChange={handleChange}
-            required={required}
           />
         ))}
       </div>

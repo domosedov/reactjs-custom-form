@@ -19,7 +19,6 @@ const DatePickerField = ({ label, name, required = false }) => {
       <input
         className="border px-2 py-2 rounded md:px-1 md:py-1 duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline text-gray-700 font-light"
         type="date"
-        required={required}
         name={name}
         id={name}
         value={state[name]}

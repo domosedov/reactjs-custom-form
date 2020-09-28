@@ -73,7 +73,6 @@ const CheckboxButton = ({
           onChange={handleChange}
           value={value}
           checked={checkedValue}
-          required={required}
           tabIndex="-1"
         />
       </label>
