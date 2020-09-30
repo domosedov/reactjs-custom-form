@@ -15,6 +15,29 @@ describe('Проверка валидатора', () => {
     expect(Validator.checkEmail('')).toBe(false)
   })
 
+  test('Phone', () => {
+    expect(Validator.checkPhone('')).toBe(false)
+    expect(Validator.checkPhone('asd')).toBe(false)
+    expect(Validator.checkPhone('  ')).toBe(false)
+    expect(Validator.checkPhone('123ad')).toBe(false)
+    expect(Validator.checkPhone('12-32-121(')).toBe(true)
+    expect(Validator.checkPhone('89286637010')).toBe(true)
+    expect(Validator.checkPhone('+7 988 380-91-88')).toBe(true)
+    expect(Validator.checkPhone('89883809188')).toBe(true)
+    expect(Validator.checkPhone('8(2323)23-242-23')).toBe(true)
+    expect(Validator.checkPhone('+7 (988) 380 - 91 - 88')).toBe(true)
+  })
+
+  test('Date', () => {
+    expect(Validator.checkDate('')).toBe(false)
+    expect(Validator.checkDate('asdas asd')).toBe(false)
+    expect(Validator.checkDate('1231241242')).toBe(false)
+    expect(Validator.checkDate(null)).toBe(false)
+    expect(Validator.checkDate('2000-12-12')).toBe(true)
+    expect(Validator.checkDate('2020-09-12')).toBe(true)
+    expect(Validator.checkDate('020-09-12')).toBe(false)
+  })
+
   test('Text Input', () => {
     expect(Validator.checkTextInput('')).toBe(false)
     expect(Validator.checkTextInput('Alex')).toBe(true)

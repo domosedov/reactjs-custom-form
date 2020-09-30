@@ -232,12 +232,68 @@ const Form = () => {
 
   const handleSubmit = evt => {
     evt.preventDefault()
+    setInputErrors(() => ({}))
 
     const validate = (state) => {
-      const textFields = ['name', 'lastname', 'middlename', 'education', '']
+      const textFields = ['name', 'lastname', 'middlename', 'education']
+      const numberFields = ['gender', 'rate', 'experiance', 'city', 'metro', 'status']
+      const multiSelectFields = ['subjects', 'students', 'places']
+
+      if (!Validator.checkAgreeButton(state.agreeOffer)) {
+        setInputErrors((prevState) => ({ ...prevState, agreeOffer: true }))
+      }
+
+      if (!Validator.checkEmail(state.email)) {
+        setInputErrors((prevState) => ({ ...prevState, email: true }))
+      }
+
+      if (!Validator.checkPhone(state.phone)) {
+        setInputErrors((prevState) => ({ ...prevState, phone: true }))
+      }
+
+      if (!Validator.checkDate(state.dateOfBirth)) {
+        setInputErrors((prevState) => ({ ...prevState, dateOfBirth: true }))
+      }
+
       for (const field of textFields) {
         if (!Validator.checkTextInput(state[field])) {
           setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+        }
+      }
+      for (const field of numberFields) {
+        if (!Validator.checkNumberInput(state[field])) {
+          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+        }
+      }
+      for (const field of multiSelectFields) {
+        if (!Validator.checkMultiSelectInput(state[field])) {
+          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+        }
+      }
+
+      if (state.description.length > 0) {
+        if (!Validator.checkTextInput(state.description)) {
+          setInputErrors((prevState) => ({ ...prevState, description: true }))
+        }
+      }
+
+      if (state.area.length > 0) {
+        if (!Validator.checkTextInput(state.area)) {
+          setInputErrors((prevState) => ({ ...prevState, area: true }))
+        }
+      }
+
+      if (state.photo) {
+        if (!Validator.checkFileInput(state.photo)) {
+          setInputErrors((prevState) => ({ ...prevState, photo: true }))
+        }
+      }
+
+      if (state.documents.length) {
+        for (const doc of state.documents) {
+          if (!Validator.checkFileInput(doc)) {
+            setInputErrors((prevState) => ({ ...prevState, documents: true }))
+          }
         }
       }
     }

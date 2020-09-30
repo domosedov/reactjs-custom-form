@@ -33,7 +33,6 @@ const UploadFilesField = () => {
     if (state.documents.length) {
       Promise.all(state.documents.map(doc => readAsDataURL(doc)))
         .then(urls => {
-          console.log(urls)
           setImageSourses(urls)
         }).catch(console.error)
     } else {

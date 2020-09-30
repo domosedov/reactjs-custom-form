@@ -24,6 +24,7 @@ const DatePickerField = ({ label, name, required = false }) => {
         value={state[name]}
         onChange={handleChange}
         max={currentDate}
+        placeholder={'Дата в формате 2000-12-31'}
       />
     </div>
   )

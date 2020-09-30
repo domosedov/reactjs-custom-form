@@ -8,6 +8,24 @@ export default class Validator {
     return re.test(String(email.trim()).toLowerCase())
   }
 
+  static checkPhone (phone) {
+    if (typeof phone !== 'string') {
+      return false
+    }
+    if (phone.trim().length <= 0) return false
+    // eslint-disable-next-line no-useless-escape
+    const re = /^((8|\+\d|7)[\- ]*)*(\(?\d*\)*[\-]?)*[\d\- ]*$/
+    return re.test(String(phone.trim()).toLowerCase())
+  }
+
+  static checkDate (date) {
+    if (typeof date !== 'string') return false
+    if (date.trim().length <= 0) return false
+
+    const regExp = /\d\d\d\d-\d\d-\d\d/
+    return regExp.test(date)
+  }
+
   static checkTextInput (text) {
     if (typeof text !== 'string') {
       return false
