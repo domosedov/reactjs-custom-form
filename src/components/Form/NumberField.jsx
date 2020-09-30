@@ -9,6 +9,8 @@ const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required =
     dispatch({ type: `change_${name}`, payload: evt.target.value })
   }
 
+  const value = Number(state[name])
+
   return (
     <div className="mb-4 flex flex-col">
       <label className="text-gray-800 font-light mb-1" htmlFor={name}>
@@ -20,7 +22,7 @@ const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required =
         type="number"
         id={name}
         name={name}
-        value={state[name]}
+        value={value}
         min={min}
         max={max}
         step={step}

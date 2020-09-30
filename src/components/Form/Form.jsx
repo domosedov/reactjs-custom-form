@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useState, useEffect } from 'react'
 import produce from 'immer'
 import { FormContext } from './context'
 import MultiSelect from './MultiSelect'
@@ -12,6 +12,7 @@ import AgreeCheckboxField from './AgreeCheckboxField'
 import FileUploadField from './FileUploadField'
 import CheckboxGroupField from './CheckboxGroupField'
 import UploadFilesField from './UploadFilesField'
+import Validator from './validator'
 
 const subjects = {
   multiple: true,
@@ -198,8 +199,8 @@ const generateInitialState = (...selectOptions) => {
     phone: '',
     email: '',
     area: '',
-    rate: 0,
-    experiance: 0,
+    rate: '0',
+    experiance: '0',
     education: '',
     description: '',
     documents: [],
@@ -223,6 +224,8 @@ const generateInitialState = (...selectOptions) => {
 }
 
 const Form = () => {
+  const [inputErrors, setInputErrors] = useState({})
+  const [data, setData] = useState(null)
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
     return generateInitialState(subjects, students, cities, metroes, genders, places, statuses)
   })
@@ -230,8 +233,23 @@ const Form = () => {
   const handleSubmit = evt => {
     evt.preventDefault()
 
-    console.log(state)
+    const validate = (state) => {
+      const textFields = ['name', 'lastname', 'middlename', 'education', '']
+      for (const field of textFields) {
+        if (!Validator.checkTextInput(state[field])) {
+          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+        }
+      }
+    }
+
+    validate(state)
+    setData(state)
   }
+
+  useEffect(() => {
+    console.log(data)
+    console.log(inputErrors)
+  }, [data, inputErrors])
 
   return (
     <FormContext.Provider value={{ state, dispatch }}>
