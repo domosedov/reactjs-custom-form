@@ -1,5 +1,6 @@
 import React, { useRef, useContext, useEffect, useState } from 'react'
 import { FormContext } from './context'
+import { readAsDataURL } from './helpers'
 
 const UploadFilesField = () => {
   const uploadButtonRef = useRef(null)
@@ -28,17 +29,13 @@ const UploadFilesField = () => {
     )
   }
 
-  console.log('render')
-
   useEffect(() => {
     if (state.documents.length) {
-      for (const doc of state.documents) {
-        const reader = new FileReader()
-        reader.addEventListener('load', (e) => {
-          setImageSourses((prevState) => [...prevState, e.target.result])
-        })
-        reader.readAsDataURL(doc)
-      }
+      Promise.all(state.documents.map(doc => readAsDataURL(doc)))
+        .then(urls => {
+          console.log(urls)
+          setImageSourses(urls)
+        }).catch(console.error)
     } else {
       setImageSourses([])
     }
