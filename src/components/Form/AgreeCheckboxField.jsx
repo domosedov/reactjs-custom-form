@@ -1,9 +1,10 @@
 import React, { Fragment, useContext } from 'react'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 import PropTypes from 'prop-types'
 
 const AgreeCheckboxField = ({ name, required = false }) => {
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
   const label = (
     <Fragment>
       На обработку персональных данных и с{' '}

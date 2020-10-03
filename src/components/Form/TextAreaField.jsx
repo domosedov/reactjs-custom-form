@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import PropTypes from 'prop-types'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 
 const TextAreaField = ({ label, name, required = false, type = 'text' }) => {
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
 
   const handleChange = (evt) => {
     dispatch({ type: `change_${name}`, payload: evt.target.value })

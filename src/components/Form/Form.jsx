@@ -1,6 +1,6 @@
 import React, { useReducer, useState, useEffect } from 'react'
 import produce from 'immer'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 import MultiSelect from './MultiSelect'
 import TextField from './TextField'
 import DatePickerField from './DatePickerField'
@@ -308,176 +308,190 @@ const Form = () => {
   }, [data, inputErrors])
 
   return (
-    <FormContext.Provider value={{ state, dispatch }}>
-      <div className="bg-white rounded-lg shadow-lg mx-auto lg:w-10/12 xl:w-8/12 my-4">
-        <h1 className="bg-indigo-600 uppercase tracking-tight text-gray-100 font-semibold text-2xl text-center px-4 py-4 rounded-t-lg">
-          Создать профиль репетитора
-        </h1>
-        <form
-          className="rounded-b-lg px-4 py-4 grid grid-cols-6"
-          onSubmit={handleSubmit}
-        >
-          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <TextField label={'Фамилия'} name={'lastname'} required={true} />
-              <TextField label={'Имя'} name={'name'} required={true} />
-              <TextField
-                label={'Отчество'}
-                name={'middlename'}
-                required={true}
-              />
+    <FormStateContext.Provider value={state}>
+      <FormDispatchContext.Provider value={dispatch}>
+        <div className="bg-white rounded-lg shadow-lg mx-auto lg:w-10/12 xl:w-8/12 my-4">
+          <h1 className="bg-indigo-600 uppercase tracking-tight text-gray-100 font-semibold text-2xl text-center px-4 py-4 rounded-t-lg">
+            Создать профиль репетитора
+          </h1>
+          <form
+            className="rounded-b-lg px-4 py-4 grid grid-cols-6"
+            onSubmit={handleSubmit}
+          >
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <TextField
+                  label={'Фамилия'}
+                  name={'lastname'}
+                  required={true}
+                />
+                <TextField label={'Имя'} name={'name'} required={true} />
+                <TextField
+                  label={'Отчество'}
+                  name={'middlename'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <FileUploadField />
+              </div>
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <FileUploadField />
-            </div>
-          </div>
 
-          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <RadioGroupField field={genders} label={'Пол'} required={true} />
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <RadioGroupField
+                  field={genders}
+                  label={'Пол'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <DatePickerField
+                  label={'Дата рождения'}
+                  name={'dateOfBirth'}
+                  required={true}
+                />
+              </div>
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <DatePickerField
-                label={'Дата рождения'}
-                name={'dateOfBirth'}
-                required={true}
-              />
-            </div>
-          </div>
 
-          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <SelectField
-                field={cities}
-                label={'Город'}
-                name={'city'}
-                required={true}
-              />
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <SelectField
+                  field={cities}
+                  label={'Город'}
+                  name={'city'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <SelectField
+                  field={metroes}
+                  label={'Метро'}
+                  name={'metro'}
+                  required={true}
+                />
+              </div>
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <SelectField
-                field={metroes}
-                label={'Метро'}
-                name={'metro'}
-                required={true}
-              />
-            </div>
-          </div>
 
-          <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <TextField
-                label={'Район'}
-                name={'area'}
-                type={'text'}
+            <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <TextField
+                  label={'Район'}
+                  name={'area'}
+                  type={'text'}
+                  required={false}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <CheckboxGroupField
+                  field={places}
+                  label={'Занятия проводятся'}
+                  required={true}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <TextField
+                  label={'Телефон'}
+                  name={'phone'}
+                  type={'tel'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <TextField
+                  label={'Email'}
+                  name={'email'}
+                  type={'email'}
+                  required={true}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <MultiSelect
+                  field={subjects}
+                  label={'Предметы'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <MultiSelect
+                  field={students}
+                  label={'Ученики'}
+                  required={true}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <SelectField
+                  field={statuses}
+                  label={'Ваш статус'}
+                  name={'status'}
+                  required={true}
+                />
+              </div>
+              <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <NumberField
+                  label={'Год начала деятельности'}
+                  min={1900}
+                  max={new Date().getUTCFullYear()}
+                  required={true}
+                  name={'experiance'}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-6">
+              <TextAreaField
+                label={'Образование'}
+                name={'education'}
+                required={true}
+              />
+            </div>
+
+            <div className="col-span-6">
+              <UploadFilesField />
+            </div>
+
+            <div className="col-span-6">
+              <TextAreaField
+                label={'Дополнительная информация'}
+                name={'description'}
                 required={false}
               />
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <CheckboxGroupField
-                field={places}
-                label={'Занятия проводятся'}
-                required={true}
-              />
-            </div>
-          </div>
 
-          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <TextField
-                label={'Телефон'}
-                name={'phone'}
-                type={'tel'}
-                required={true}
-              />
+            <div className="col-span-6 grid grid-cols-4 grid-rows-2 gap-4">
+              <div className="col-start-1 col-end-5 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
+                <NumberField
+                  label={'Ваша ставка (₽/час)'}
+                  min={100}
+                  max={500000}
+                  step={10}
+                  required={true}
+                  name={'rate'}
+                />
+              </div>
+              <div className="col-start-1 col-end-5 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
+                <AgreeCheckboxField name={'agreeOffer'} required={true} />
+              </div>
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <TextField
-                label={'Email'}
-                name={'email'}
-                type={'email'}
-                required={true}
-              />
-            </div>
-          </div>
 
-          <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <MultiSelect
-                field={subjects}
-                label={'Предметы'}
-                required={true}
-              />
+            <div className="col-span-6">
+              <button className="block mx-auto px-4 py-2 bg-indigo-600 text-white rounded duration-200 hover:bg-indigo-500 focus:outline-none focus:shadow-outline">
+                Отправить
+              </button>
             </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <MultiSelect field={students} label={'Ученики'} required={true} />
-            </div>
-          </div>
-
-          <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <SelectField
-                field={statuses}
-                label={'Ваш статус'}
-                name={'status'}
-                required={true}
-              />
-            </div>
-            <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <NumberField
-                label={'Год начала деятельности'}
-                min={1900}
-                max={new Date().getUTCFullYear()}
-                required={true}
-                name={'experiance'}
-              />
-            </div>
-          </div>
-
-          <div className="col-span-6">
-            <TextAreaField
-              label={'Образование'}
-              name={'education'}
-              required={true}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <UploadFilesField/>
-          </div>
-
-          <div className="col-span-6">
-            <TextAreaField
-              label={'Дополнительная информация'}
-              name={'description'}
-              required={false}
-            />
-          </div>
-
-          <div className="col-span-6 grid grid-cols-4 grid-rows-2 gap-4">
-            <div className="col-start-1 col-end-5 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-              <NumberField
-                label={'Ваша ставка (₽/час)'}
-                min={100}
-                max={500000}
-                step={10}
-                required={true}
-                name={'rate'}
-              />
-            </div>
-            <div className="col-start-1 col-end-5 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-              <AgreeCheckboxField name={'agreeOffer'} required={true} />
-            </div>
-          </div>
-
-          <div className="col-span-6">
-            <button className="block mx-auto px-4 py-2 bg-indigo-600 text-white rounded duration-200 hover:bg-indigo-500 focus:outline-none focus:shadow-outline">
-              Отправить
-            </button>
-          </div>
-        </form>
-      </div>
-    </FormContext.Provider>
+          </form>
+        </div>
+      </FormDispatchContext.Provider>
+    </FormStateContext.Provider>
   )
 }
 

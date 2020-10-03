@@ -1,10 +1,11 @@
 import React, { useRef, useContext, useEffect, useState } from 'react'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 import { readAsDataURL } from './helpers'
 
 const UploadFilesField = () => {
   const uploadButtonRef = useRef(null)
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
   const [imageSources, setImageSourses] = useState([])
 
   const handleClick = (evt) => {

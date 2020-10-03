@@ -1,10 +1,11 @@
 import React, { useContext, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 import RadioButton from './RadioButton'
 
 const RadioGroupField = ({ field, label, required = false }) => {
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
 
   const handleChange = useCallback(
     (evt) => {

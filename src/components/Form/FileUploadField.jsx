@@ -1,8 +1,9 @@
 import React, { useRef, useState, useContext, useEffect } from 'react'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 
 const FileUploadField = () => {
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
   const [imageSource, setImageSource] = useState('')
   const fileRef = useRef(null)
 

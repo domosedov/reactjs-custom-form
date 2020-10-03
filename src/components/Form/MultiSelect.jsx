@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useRef, useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import MultiSelectOption from './MultiSelectOption'
-import { FormContext } from './context'
+import { FormDispatchContext, FormStateContext } from './context'
 import MultiSelectItemsSelected from './MultiSelectItemsSelected'
 
 const selector = (state, key) => state[key]
@@ -15,7 +15,8 @@ const computeSelectedItems = (field, state) => {
 }
 
 const MultiSelect = ({ field, label, required = false }) => {
-  const { state, dispatch } = useContext(FormContext)
+  const state = useContext(FormStateContext)
+  const dispatch = useContext(FormDispatchContext)
   const [isOpen, setIsOpen] = useState(false)
   const itemsListRef = useRef(null)
   const buttonRef = useRef(null)
