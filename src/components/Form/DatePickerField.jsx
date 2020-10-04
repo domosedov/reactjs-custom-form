@@ -1,12 +1,11 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 
-const DatePickerField = ({ label, name, required = false }) => {
-  const state = useContext(FormStateContext)
+const DatePickerField = ({ label = '', name = '', currentValue = '', required = false, placeholder = '' }) => {
   const dispatch = useContext(FormDispatchContext)
   const handleChange = (evt) => {
-    dispatch({ type: `change_${name}`, payload: evt.target.value })
+    dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
   }
 
   const currentDate = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -22,10 +21,10 @@ const DatePickerField = ({ label, name, required = false }) => {
         type="date"
         name={name}
         id={name}
-        value={state[name]}
+        value={currentValue}
         onChange={handleChange}
         max={currentDate}
-        placeholder={'Дата в формате 2000-12-31'}
+        placeholder={placeholder}
       />
     </div>
   )
@@ -34,7 +33,9 @@ const DatePickerField = ({ label, name, required = false }) => {
 DatePickerField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
+  placeholder: PropTypes.string,
+  currentValue: PropTypes.string,
   required: PropTypes.bool
 }
 
-export default DatePickerField
+export default memo(DatePickerField)

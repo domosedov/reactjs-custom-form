@@ -1,17 +1,25 @@
-import React, { useContext, useCallback } from 'react'
+import React, { useContext, useCallback, memo } from 'react'
 import PropTypes from 'prop-types'
 import CheckboxButton from './CheckboxButton'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 
-const CheckboxGroupField = ({ field, label, required = false }) => {
-  const state = useContext(FormStateContext)
+const CheckboxGroupField = ({
+  options = [],
+  name = '',
+  currentValue = {},
+  label,
+  required = false
+}) => {
   const dispatch = useContext(FormDispatchContext)
 
   const handleChange = useCallback(
     (evt) => {
-      dispatch({ type: `change_${field.name}`, payload: evt.target.value })
+      dispatch({
+        type: `CHANGE_${name}`,
+        payload: { value: evt.target.value, name }
+      })
     },
-    [dispatch, field.name]
+    [dispatch, name]
   )
 
   return (
@@ -21,11 +29,11 @@ const CheckboxGroupField = ({ field, label, required = false }) => {
         {required && <span className="text-red-600">*</span>}
       </span>
       <div className="flex flex-row items-start gap-2 flex-wrap">
-        {field.options.map((item) => (
+        {options.map((item) => (
           <CheckboxButton
-            checkedValue={state[field.name][item.value]}
-            name={field.name}
-            label={item.label}
+            checkedValue={currentValue[item.value]}
+            name={name}
+            label={item.title}
             key={item.value}
             value={item.value}
             handleChange={handleChange}
@@ -37,18 +45,16 @@ const CheckboxGroupField = ({ field, label, required = false }) => {
 }
 
 CheckboxGroupField.propTypes = {
-  field: PropTypes.shape({
-    multiple: PropTypes.bool,
-    name: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.number
-      })
-    )
-  }),
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      value: PropTypes.string
+    })
+  ),
   required: PropTypes.bool,
-  label: PropTypes.string
+  label: PropTypes.string,
+  name: PropTypes.string,
+  currentValue: PropTypes.object
 }
 
-export default CheckboxGroupField
+export default memo(CheckboxGroupField)

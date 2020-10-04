@@ -73,7 +73,11 @@ export const immerReducer = (draft, action) => {
     'CHANGE_rate',
     'CHANGE_status'
   ]
-  const MULTIPLE_VALUE_FIELDS = ['places', 'students', 'subjects']
+  const MULTIPLE_VALUE_FIELDS = [
+    'CHANGE_places',
+    'CHANGE_students',
+    'CHANGE_subjects'
+  ]
 
   const SET_FILE = 'SET_FILE'
   const UNSET_FILE = 'UNSET_FILE'

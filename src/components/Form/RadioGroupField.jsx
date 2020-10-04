@@ -1,17 +1,22 @@
-import React, { useContext, useCallback } from 'react'
+import React, { useContext, useCallback, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 import RadioButton from './RadioButton'
 
-const RadioGroupField = ({ field, label, required = false }) => {
-  const state = useContext(FormStateContext)
+const RadioGroupField = ({
+  options = [],
+  name = '',
+  label = '',
+  required = false,
+  currentValue = ''
+}) => {
   const dispatch = useContext(FormDispatchContext)
 
   const handleChange = useCallback(
     (evt) => {
-      dispatch({ type: `change_${field.name}`, payload: evt.target.value })
+      dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
     },
-    [dispatch, field.name]
+    [dispatch, name]
   )
 
   return (
@@ -21,11 +26,11 @@ const RadioGroupField = ({ field, label, required = false }) => {
         {required && <span className="text-red-600">*</span>}
       </span>
       <div className="flex items-center space-x-4">
-        {field.options.map((item) => (
+        {options.map((item) => (
           <RadioButton
-            checkedValue={state[field.name]}
-            name={field.name}
-            label={item.label}
+            checkedValue={currentValue}
+            name={name}
+            label={item.title}
             key={item.value}
             value={item.value}
             handleChange={handleChange}
@@ -37,18 +42,16 @@ const RadioGroupField = ({ field, label, required = false }) => {
 }
 
 RadioGroupField.propTypes = {
-  field: PropTypes.shape({
-    multiple: PropTypes.bool,
-    name: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.number
-      })
-    )
-  }),
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      value: PropTypes.string
+    })
+  ),
   required: PropTypes.bool,
-  label: PropTypes.string
+  label: PropTypes.string,
+  name: PropTypes.string,
+  currentValue: PropTypes.string
 }
 
-export default RadioGroupField
+export default memo(RadioGroupField)

@@ -1,14 +1,13 @@
-import React, { useContext, Fragment } from 'react'
+import React, { useContext, Fragment, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 import SelectOption from './SelectOption'
 
-const SelectField = ({ field, label, name, required }) => {
-  const state = useContext(FormStateContext)
+const SelectField = ({ options, label, name, required, currentValue }) => {
   const dispatch = useContext(FormDispatchContext)
 
   const handleChange = evt => {
-    dispatch({ type: `change_${field.name}`, payload: evt.target.value })
+    dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
   }
 
   return (
@@ -19,21 +18,18 @@ const SelectField = ({ field, label, name, required }) => {
       </label>
       <select
         className={`${
-          state[name] === '' ? 'text-gray-500' : ' text-gray-700'
+          currentValue === '' ? 'text-gray-500' : ' text-gray-700'
         } px-2 py-2 block border bg-white rounded duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline font-light`}
         name={name}
-        id={field.name}
+        id={name}
         onChange={handleChange}
-        value={state[name]}
+        value={currentValue}
       >
         <Fragment>
-          <option
-            className="text-gray-400 bg-gray-200"
-            value=""
-          >
+          <option className="text-gray-400 bg-gray-200" value="">
             Выбрать...
           </option>
-          {field.options.map((item) => (
+          {options.map((item) => (
             <SelectOption key={item.value} {...item} />
           ))}
         </Fragment>
@@ -43,19 +39,16 @@ const SelectField = ({ field, label, name, required }) => {
 }
 
 SelectField.propTypes = {
-  field: PropTypes.shape({
-    multiple: PropTypes.bool,
-    name: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.number
-      })
-    )
-  }),
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      value: PropTypes.string
+    })
+  ),
+  required: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string,
-  required: PropTypes.bool
+  currentValue: PropTypes.string
 }
 
-export default SelectField
+export default memo(SelectField)

@@ -1,8 +1,13 @@
-import React, { useRef, useState, useContext, useEffect } from 'react'
-import { FormDispatchContext, FormStateContext } from './context'
+import React, { useRef, useState, useContext, useEffect, memo } from 'react'
+import { FormDispatchContext } from './context'
 
-const FileUploadField = () => {
-  const state = useContext(FormStateContext)
+const FileUploadField = ({
+  currentValue = null,
+  label = '',
+  name = '',
+  required = false
+}) => {
+  // const state = useContext(FormStateContext)
   const dispatch = useContext(FormDispatchContext)
   const [imageSource, setImageSource] = useState('')
   const fileRef = useRef(null)
@@ -14,32 +19,35 @@ const FileUploadField = () => {
 
   const handleChange = (evt) => {
     if (evt.target.files.length) {
-      dispatch({ type: 'set_photo', payload: evt.target.files[0] })
+      dispatch({ type: 'SET_FILE', payload: { value: evt.target.files[0], name } })
     }
   }
 
   const handleDeleteClick = () => {
-    dispatch({ type: 'delete_photo' })
+    dispatch({ type: 'UNSET_FILE', payload: { name } })
   }
 
   useEffect(() => {
-    if (state.photo) {
+    if (currentValue) {
       const reader = new FileReader()
       reader.addEventListener('load', (e) => {
         setImageSource(e.target.result)
       })
-      reader.readAsDataURL(state.photo)
+      reader.readAsDataURL(currentValue)
     } else {
       setImageSource('')
     }
-  }, [state.photo])
+  }, [currentValue])
+
+  console.log('render', name)
 
   return (
     <div className="h-full flex flex-col pb-4">
       <label className="text-gray-800 font-light mb-1" htmlFor="photo">
-        Фото
+        {label}
+        {required && <span className="text-red-600">*</span>}
       </label>
-      {!state.photo ? (
+      {!currentValue ? (
         <div className="relative px-2 py-2 border-4 border-dashed border-gray-300 h-full flex items-center justify-center">
           <button
             type="button"
@@ -67,8 +75,8 @@ const FileUploadField = () => {
             ref={fileRef}
             onChange={handleChange}
             type="file"
-            id="photo"
-            name="photo"
+            id={name}
+            name={name}
             tabIndex="-1"
             accept=".png, .jpg, .jpeg"
           />
@@ -108,15 +116,17 @@ const FileUploadField = () => {
             <div>
               <div className="text-sm text-gray-900 font-light">Имя файла</div>
               <div className="text-xs mb-2 text-gray-600 overflow-x-auto overflow-y-hidden">
-                {state.photo.name}
+                {currentValue.name}
               </div>
               <div className="text-sm text-gray-900 font-light">Тип файла</div>
               <div className="text-xs mb-2 text-gray-600 overflow-x-auto overflow-y-hidden">
-                {state.photo.type}
+                {currentValue.type}
               </div>
-              <div className="text-sm text-gray-900 font-light">Размер файла</div>
+              <div className="text-sm text-gray-900 font-light">
+                Размер файла
+              </div>
               <div className="text-xs mb-2 text-gray-600 overflow-x-auto overflow-y-hidden">
-                {`${(state.photo.size / 1000).toFixed(2)} KB`}
+                {`${(currentValue.size / 1000).toFixed(2)} KB`}
               </div>
             </div>
           </div>
@@ -126,4 +136,4 @@ const FileUploadField = () => {
   )
 }
 
-export default FileUploadField
+export default memo(FileUploadField)
