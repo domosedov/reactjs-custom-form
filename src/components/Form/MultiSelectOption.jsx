@@ -6,8 +6,7 @@ const MultiSelectOption = ({
   name,
   value,
   handleChange,
-  checkedValue,
-  required = false
+  checkedValue
 }) => {
   const checkboxRef = useRef(null)
   const handleFakeRadioButtonKeyPress = (evt) => {
@@ -78,9 +77,8 @@ const MultiSelectOption = ({
 MultiSelectOption.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.string,
   checkedValue: PropTypes.bool,
-  required: PropTypes.bool,
   handleChange: PropTypes.func
 }
 

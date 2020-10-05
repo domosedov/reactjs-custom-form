@@ -1,7 +1,7 @@
 import React, { useReducer, useState, useEffect } from 'react'
 import produce from 'immer'
 import { FormDispatchContext, FormStateContext } from './context'
-import MultiSelect from './MultiSelect'
+import MultiSelectField from './MultiSelectField'
 import TextField from './TextField'
 import DatePickerField from './DatePickerField'
 import TextAreaField from './TextAreaField'
@@ -11,223 +11,313 @@ import SelectField from './SelectField'
 import AgreeCheckboxField from './AgreeCheckboxField'
 import FileUploadField from './FileUploadField'
 import CheckboxGroupField from './CheckboxGroupField'
-import UploadFilesField from './UploadFilesField'
+import MultipleFilesUploadField from './MultipleFilesUploadField'
 import Validator from './validator'
+import { computeInitialState, immerReducer } from './reducer'
 
-const subjects = {
-  multiple: true,
-  name: 'subjects',
-  options: [
-    { label: 'Русский язык', value: 1 },
-    { label: 'Математика', value: 2 },
-    { label: 'Обществознание', value: 3 },
-    { label: 'История', value: 312 },
-    { label: 'Компьютерная грамотность', value: 23 },
-    { label: 'Английский язык', value: 643 },
-    { label: 'Русский язык', value: 112 },
-    { label: 'Математика', value: 232 },
-    { label: 'Обществознание', value: 112433 },
-    { label: 'История', value: 31243652 },
-    { label: 'Компьютерная грамотность', value: 2463 },
-    { label: 'Английский язык', value: 64453633 }
-  ]
-}
+const curriedReducerFunction = produce(immerReducer)
 
-const students = {
-  multiple: true,
-  name: 'students',
-  options: [
-    { label: 'Дошкольник', value: 1 },
-    { label: 'Начальная школа', value: 2 },
-    { label: '2-Класс', value: 3 }
-  ]
-}
-
-const cities = {
+const nameField = {
+  name: 'name',
+  label: 'Имя',
   multiple: false,
-  name: 'city',
-  options: [
-    { label: 'Москва', value: 1 },
-    { label: 'Химки', value: 2 }
-  ]
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
 }
 
-const statuses = {
+const middlenameField = {
+  name: 'middlename',
+  label: 'Отчество',
   multiple: false,
-  name: 'status',
-  options: [
-    { label: 'Школьный учитель', value: 3241 },
-    { label: 'Частный преподаватель', value: 25345 }
-  ]
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
 }
 
-const genders = {
+const lastnameField = {
+  name: 'lastname',
+  label: 'Фамилия',
   multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
+}
+
+const photoField = {
+  name: 'photo',
+  label: 'Фото',
+  multiple: false,
+  type: 'file',
+  valueType: 'object',
+  required: false,
+  options: null,
+  defaultValue: null,
+  placeholder: ''
+}
+
+const genderField = {
   name: 'gender',
-  options: [
-    { label: 'Мужской', value: 32 },
-    { label: 'Женский', value: 35 }
-  ]
-}
-
-const metroes = {
+  label: 'Пол',
   multiple: false,
+  type: 'text',
+  valueType: 'string',
+  required: true,
+  options: [
+    { title: 'Мужской', value: '124145' },
+    { title: 'Женский', value: '1223' }
+  ],
+  defaultValue: '',
+  placeholder: ''
+}
+
+const dateField = {
+  name: 'dateOfBirth',
+  label: 'Дата рождения',
+  multiple: false,
+  type: 'date',
+  valueType: 'string',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: 'Дата в формате 2000-12-31'
+}
+
+const cityField = {
+  name: 'city',
+  label: 'Город',
+  multiple: false,
+  type: 'select',
+  valueType: 'string',
+  required: true,
+  options: [
+    { title: 'Москва', value: '12423145' },
+    { title: 'Химки', value: '1223123' }
+  ],
+  defaultValue: '',
+  placeholder: ''
+}
+
+const metroField = {
   name: 'metro',
+  label: 'Метро',
+  multiple: false,
+  type: 'select',
+  valueType: 'string',
+  required: true,
   options: [
-    { label: 'Планерная', value: 1 },
-    { label: 'Сходненская', value: 2 }
-  ]
+    { title: 'Планерная', value: '124146565' },
+    { title: 'Спартак', value: '1223423' }
+  ],
+  defaultValue: '',
+  placeholder: ''
 }
 
-const places = {
-  multiple: true,
+const placesField = {
   name: 'places',
+  label: 'Занятия проводятся',
+  multiple: true,
+  type: 'multiselect',
+  valueType: 'object',
+  required: true,
   options: [
-    { label: 'У репетитора', value: 11 },
-    { label: 'У ученика', value: 22 },
-    { label: 'Дистанционно', value: 33 }
-  ]
+    { title: 'У репетитора', value: '124145' },
+    { title: 'У ученика', value: '1223' },
+    { title: 'Дистанционно', value: '122345523' }
+  ],
+  defaultValue: {},
+  placeholder: ''
 }
 
-const reducer = (draft, action) => {
-  switch (action.type) {
-    case 'change_lastname': {
-      draft.lastname = action.payload
-      break
-    }
-    case 'change_name': {
-      draft.name = action.payload
-      break
-    }
-    case 'change_middlename': {
-      draft.middlename = action.payload
-      break
-    }
-    case 'set_photo': {
-      draft.photo = action.payload
-      break
-    }
-    case 'delete_photo': {
-      draft.photo = null
-      break
-    }
-    case 'change_gender': {
-      draft.gender = action.payload
-      break
-    }
-    case 'change_dateOfBirth': {
-      draft.dateOfBirth = action.payload
-      break
-    }
-    case 'change_phone': {
-      draft.phone = action.payload
-      break
-    }
-    case 'change_email': {
-      draft.email = action.payload
-      break
-    }
-    case 'change_city': {
-      draft.city = action.payload
-      break
-    }
-    case 'change_area': {
-      draft.area = action.payload
-      break
-    }
-    case 'change_metro': {
-      draft.metro = action.payload
-      break
-    }
-    case 'change_places': {
-      draft.places[action.payload] = !draft.places[action.payload]
-      break
-    }
-    case 'change_status': {
-      draft.status = action.payload
-      break
-    }
-    case 'change_subjects': {
-      draft.subjects[action.payload] = !draft.subjects[action.payload]
-      break
-    }
-    case 'change_students': {
-      draft.students[action.payload] = !draft.students[action.payload]
-      break
-    }
-    case 'change_rate': {
-      draft.rate = action.payload
-      break
-    }
-    case 'change_experiance': {
-      draft.experiance = action.payload
-      break
-    }
-    case 'change_education': {
-      draft.education = action.payload
-      break
-    }
-    case 'change_description': {
-      draft.description = action.payload
-      break
-    }
-    case 'set_documents': {
-      draft.documents = action.payload
-      break
-    }
-    case 'empty_documents': {
-      draft.documents = []
-      break
-    }
-    case 'change_agreeOffer': {
-      draft.agreeOffer = !draft.agreeOffer
-      break
-    }
-  }
+const areaField = {
+  name: 'area',
+  label: 'Район',
+  multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: false,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
 }
 
-const curriedReducerFunction = produce(reducer)
+const phoneField = {
+  name: 'phone',
+  label: 'Телефон',
+  multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
+}
 
-const generateInitialState = (...selectOptions) => {
-  const initialState = {
-    lastname: '',
-    name: '',
-    middlename: '',
-    photo: null,
-    gender: '',
-    dateOfBirth: '',
-    phone: '',
-    email: '',
-    area: '',
-    rate: '0',
-    experiance: '0',
-    education: '',
-    description: '',
-    documents: [],
-    agreeOffer: false
-  }
+const emailField = {
+  name: 'email',
+  label: 'Email',
+  multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: ''
+}
 
-  if (selectOptions.length) {
-    for (const select of selectOptions) {
-      if (select.multiple) {
-        initialState[select.name] = {}
-        for (const option of select.options) {
-          initialState[select.name][option.value] = false
-        }
-      } else {
-        initialState[select.name] = ''
-      }
-    }
-  }
+const subjectsField = {
+  name: 'subjects',
+  label: 'Предметы',
+  multiple: true,
+  type: 'multiselect',
+  valueType: 'object',
+  required: true,
+  options: [
+    { title: 'Русский язык', value: '124145' },
+    { title: 'Математика', value: '1223' },
+    { title: 'История', value: '122345523' }
+  ],
+  defaultValue: {},
+  placeholder: ''
+}
 
-  return initialState
+const studentsField = {
+  name: 'students',
+  label: 'Категории учеников',
+  multiple: true,
+  type: 'multiselect',
+  valueType: 'object',
+  required: true,
+  options: [
+    { title: 'Дошкольники', value: '124145' },
+    { title: 'Маладшие классы', value: '1223' },
+    { title: 'Старшие классы', value: '122345523' }
+  ],
+  defaultValue: {},
+  placeholder: ''
+}
+
+const statusField = {
+  name: 'status',
+  label: 'Ваш статус',
+  multiple: false,
+  type: 'select',
+  valueType: 'string',
+  required: true,
+  options: [
+    { title: 'Частный преподаватель', value: '124146565' },
+    { title: 'Школьный учитель', value: '1223423' }
+  ],
+  defaultValue: '',
+  placeholder: ''
+}
+
+const experianceField = {
+  name: 'experiance',
+  label: 'Ваш стаж',
+  multiple: false,
+  type: 'number',
+  valueType: 'string',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: 'Введит год начала деятельности'
+}
+
+const educationField = {
+  name: 'education',
+  label: 'Образование',
+  multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: 'Укажите где учились'
+}
+
+const descriptionField = {
+  name: 'description',
+  label: 'Дополнительно',
+  multiple: false,
+  type: 'text',
+  valueType: 'text',
+  required: false,
+  options: null,
+  defaultValue: '',
+  placeholder: 'Укажите где учились'
+}
+
+const rateField = {
+  name: 'rate',
+  label: 'Ваша ставка (₽/час)',
+  multiple: false,
+  type: 'number',
+  valueType: 'string',
+  required: true,
+  options: null,
+  defaultValue: '',
+  placeholder: 'Укажите стоимость'
+}
+
+const documentsField = {
+  name: 'documents',
+  label: 'Документы',
+  multiple: false,
+  type: 'files',
+  valueType: 'array',
+  required: false,
+  options: null,
+  defaultValue: [],
+  placeholder: ''
+}
+
+const agreeOfferField = {
+  name: 'agreeOffer',
+  label: 'Согласие',
+  multiple: false,
+  type: 'agreeButton',
+  valueType: 'array',
+  required: true,
+  options: null,
+  defaultValue: false,
+  placeholder: ''
 }
 
 const Form = () => {
   const [inputErrors, setInputErrors] = useState({})
   const [data, setData] = useState(null)
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
-    return generateInitialState(subjects, students, cities, metroes, genders, places, statuses)
+    return computeInitialState(
+      lastnameField,
+      nameField,
+      middlenameField,
+      genderField,
+      dateField,
+      cityField,
+      metroField,
+      placesField,
+      areaField,
+      phoneField,
+      emailField,
+      subjectsField,
+      studentsField,
+      statusField,
+      experianceField,
+      descriptionField,
+      rateField,
+      documentsField,
+      agreeOfferField
+    )
   })
 
   const handleSubmit = evt => {
@@ -321,168 +411,199 @@ const Form = () => {
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <TextField
-                  label={'Фамилия'}
-                  name={'lastname'}
-                  required={true}
+                  label={nameField.label}
+                  name={nameField.name}
+                  required={nameField.required}
+                  currentValue={state[nameField.name]}
                 />
-                <TextField label={'Имя'} name={'name'} required={true} />
                 <TextField
-                  label={'Отчество'}
-                  name={'middlename'}
-                  required={true}
+                  label={lastnameField.label}
+                  name={lastnameField.name}
+                  required={lastnameField.required}
+                  currentValue={state[lastnameField.name]}
+                />
+                <TextField
+                  label={middlenameField.label}
+                  name={middlenameField.name}
+                  required={middlenameField.required}
+                  currentValue={state[middlenameField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-                <FileUploadField />
+                <FileUploadField
+                  label={photoField.label}
+                  name={photoField.name}
+                  required={photoField.required}
+                  currentValue={state[photoField.name]}
+                />
               </div>
             </div>
-
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <RadioGroupField
-                  field={genders}
-                  label={'Пол'}
-                  required={true}
+                  options={genderField.options}
+                  label={genderField.label}
+                  name={genderField.name}
+                  required={genderField.required}
+                  currentValue={state[genderField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
                 <DatePickerField
-                  label={'Дата рождения'}
-                  name={'dateOfBirth'}
-                  required={true}
+                  label={dateField.label}
+                  name={dateField.name}
+                  required={dateField.required}
+                  currentValue={state[dateField.name]}
+                  placeholder={dateField.placeholder}
                 />
               </div>
             </div>
-
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <SelectField
-                  field={cities}
-                  label={'Город'}
-                  name={'city'}
-                  required={true}
+                  options={cityField.options}
+                  label={cityField.label}
+                  name={cityField.name}
+                  required={cityField.required}
+                  currentValue={state[cityField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
                 <SelectField
-                  field={metroes}
-                  label={'Метро'}
-                  name={'metro'}
-                  required={true}
+                  options={metroField.options}
+                  label={metroField.label}
+                  name={metroField.name}
+                  required={metroField.required}
+                  currentValue={state[metroField.name]}
                 />
               </div>
             </div>
-
             <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <TextField
-                  label={'Район'}
-                  name={'area'}
-                  type={'text'}
-                  required={false}
+                  label={areaField.label}
+                  name={areaField.name}
+                  required={areaField.required}
+                  currentValue={state[areaField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
                 <CheckboxGroupField
-                  field={places}
-                  label={'Занятия проводятся'}
-                  required={true}
+                  options={placesField.options}
+                  label={placesField.label}
+                  name={placesField.name}
+                  required={placesField.required}
+                  currentValue={state[placesField.name]}
                 />
               </div>
             </div>
-
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <TextField
-                  label={'Телефон'}
-                  name={'phone'}
-                  type={'tel'}
-                  required={true}
+                  label={phoneField.label}
+                  name={phoneField.name}
+                  required={phoneField.required}
+                  currentValue={state[phoneField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
                 <TextField
-                  label={'Email'}
-                  name={'email'}
-                  type={'email'}
-                  required={true}
+                  label={emailField.label}
+                  name={emailField.name}
+                  required={emailField.required}
+                  currentValue={state[emailField.name]}
                 />
               </div>
             </div>
-
             <div className="col-span-6 flex flex-col md:grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
-                <MultiSelect
-                  field={subjects}
-                  label={'Предметы'}
-                  required={true}
+                <MultiSelectField
+                  options={subjectsField.options}
+                  label={subjectsField.label}
+                  name={subjectsField.name}
+                  required={subjectsField.required}
+                  currentValue={state[subjectsField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-                <MultiSelect
-                  field={students}
-                  label={'Ученики'}
-                  required={true}
+                <MultiSelectField
+                  options={studentsField.options}
+                  label={studentsField.label}
+                  name={studentsField.name}
+                  required={studentsField.required}
+                  currentValue={state[studentsField.name]}
                 />
               </div>
             </div>
-
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <SelectField
-                  field={statuses}
-                  label={'Ваш статус'}
-                  name={'status'}
-                  required={true}
+                  options={statusField.options}
+                  label={statusField.label}
+                  name={statusField.name}
+                  required={statusField.required}
+                  currentValue={state[statusField.name]}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
                 <NumberField
-                  label={'Год начала деятельности'}
+                  label={experianceField.label}
+                  name={experianceField.name}
+                  required={experianceField.required}
+                  placeholder={experianceField.placeholder}
+                  currentValue={state[experianceField.name]}
                   min={1900}
-                  max={new Date().getUTCFullYear()}
-                  required={true}
-                  name={'experiance'}
+                  max={new Date().getFullYear()}
                 />
               </div>
             </div>
-
             <div className="col-span-6">
               <TextAreaField
-                label={'Образование'}
-                name={'education'}
-                required={true}
+                label={educationField.label}
+                name={educationField.name}
+                required={educationField.required}
+                currentValue={state[educationField.name]}
+                placeholder={educationField.placeholder}
               />
             </div>
-
             <div className="col-span-6">
-              <UploadFilesField />
+              <MultipleFilesUploadField
+                label={documentsField.label}
+                name={documentsField.name}
+                required={documentsField.required}
+                currentValue={state[documentsField.name]}
+              />
             </div>
-
             <div className="col-span-6">
               <TextAreaField
-                label={'Дополнительная информация'}
-                name={'description'}
-                required={false}
+                label={descriptionField.label}
+                name={descriptionField.name}
+                required={descriptionField.required}
+                currentValue={state[descriptionField.name]}
+                placeholder={descriptionField.placeholder}
               />
             </div>
 
             <div className="col-span-6 grid grid-cols-4 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-5 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <NumberField
-                  label={'Ваша ставка (₽/час)'}
+                  label={rateField.label}
+                  name={rateField.name}
+                  required={rateField.required}
+                  placeholder={rateField.placeholder}
+                  currentValue={state[rateField.name]}
                   min={100}
-                  max={500000}
-                  step={10}
-                  required={true}
-                  name={'rate'}
+                  max={1000000}
                 />
               </div>
               <div className="col-start-1 col-end-5 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
-                <AgreeCheckboxField name={'agreeOffer'} required={true} />
+                <AgreeCheckboxField
+                  name={agreeOfferField.name}
+                  required={agreeOfferField.required}
+                  currentValue={state[agreeOfferField.name]}
+                />
               </div>
             </div>
-
             <div className="col-span-6">
               <button className="block mx-auto px-4 py-2 bg-indigo-600 text-white rounded duration-200 hover:bg-indigo-500 focus:outline-none focus:shadow-outline">
                 Отправить

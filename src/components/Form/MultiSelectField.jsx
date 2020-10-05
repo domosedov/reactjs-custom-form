@@ -1,30 +1,37 @@
-import React, { useCallback, useContext, useRef, useState, useEffect, useMemo } from 'react'
+import React, { useCallback, useContext, useRef, useState, useEffect, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
 import MultiSelectOption from './MultiSelectOption'
-import { FormDispatchContext, FormStateContext } from './context'
-import MultiSelectItemsSelected from './MultiSelectItemsSelected'
+import { FormDispatchContext } from './context'
+import MultiSelectCheckedOptions from './MultiSelectCheckedOptions'
 
-const selector = (state, key) => state[key]
-
-const computeSelectedItems = (field, state) => {
-  const { name } = field
-  const slice = selector(state, name)
-  return field.options.filter((item) => {
-    return slice[item.value]
+const computeSelectedItems = (currentValue, options) => {
+  return options.filter((item) => {
+    return currentValue[item.value]
   })
 }
 
-const MultiSelect = ({ field, label, required = false }) => {
-  const state = useContext(FormStateContext)
+const MultiSelectField = ({
+  options = [],
+  name = '',
+  currentValue = {},
+  label,
+  required = false
+}) => {
   const dispatch = useContext(FormDispatchContext)
   const [isOpen, setIsOpen] = useState(false)
   const itemsListRef = useRef(null)
   const buttonRef = useRef(null)
   const areaButtonRef = useRef(null)
 
-  const handleChange = useCallback((evt) => {
-    dispatch({ type: `change_${field.name}`, payload: evt.target.value })
-  }, [dispatch, field.name])
+  const handleChange = useCallback(
+    (evt) => {
+      dispatch({
+        type: `CHANGE_${name}`,
+        payload: { value: evt.target.value, name }
+      })
+    },
+    [dispatch, name]
+  )
 
   useEffect(() => {
     if (isOpen && itemsListRef.current) {
@@ -36,8 +43,8 @@ const MultiSelect = ({ field, label, required = false }) => {
   }, [itemsListRef, isOpen])
 
   const selectedItems = useMemo(() => {
-    return computeSelectedItems(field, state)
-  }, [field, state])
+    return computeSelectedItems(currentValue, options)
+  }, [currentValue, options])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -65,19 +72,20 @@ const MultiSelect = ({ field, label, required = false }) => {
       <div className="relative border min-h-10 rounded flex justify-between">
         {selectedItems.length ? (
           <div className="px-2 py-2 w-full h-full min-h-10">
-            <MultiSelectItemsSelected
+            <MultiSelectCheckedOptions
               handleClick={handleChange}
               items={selectedItems}
             />
           </div>
-        ) : (<div
-          ref={areaButtonRef}
-          onClick={() => setIsOpen(!isOpen)}
-          className="cursor-pointer px-2 py-2 w-full h-full min-h-10"
-        >
-          <span className="text-gray-500 font-light">Выбрать...</span>
-        </div>)
-        }
+        ) : (
+          <div
+            ref={areaButtonRef}
+            onClick={() => setIsOpen(!isOpen)}
+            className="cursor-pointer px-2 py-2 w-full h-full min-h-10"
+          >
+            <span className="text-gray-500 font-light">Выбрать...</span>
+          </div>
+        )}
         <button
           id={`button-${label}`}
           ref={buttonRef}
@@ -117,14 +125,14 @@ const MultiSelect = ({ field, label, required = false }) => {
             className="bg-gray-100 absolute top-auto z-10 w-full border border-gray-500 max-h-64 overflow-y-auto"
           >
             <div className="flex flex-col">
-              {field.options.map((item) => (
+              {options.map((item) => (
                 <MultiSelectOption
                   key={item.value}
-                  label={item.label}
+                  label={item.title}
                   value={item.value}
-                  name={field.name}
+                  name={name}
                   handleChange={handleChange}
-                  checkedValue={state[field.name][item.value]}
+                  checkedValue={currentValue[item.value]}
                 />
               ))}
             </div>
@@ -135,19 +143,17 @@ const MultiSelect = ({ field, label, required = false }) => {
   )
 }
 
-MultiSelect.propTypes = {
-  field: PropTypes.shape({
-    multiple: PropTypes.bool,
-    name: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.number
-      })
-    )
-  }),
+MultiSelectField.propTypes = {
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      value: PropTypes.string
+    })
+  ),
+  required: PropTypes.bool,
   label: PropTypes.string,
-  required: PropTypes.bool
+  name: PropTypes.string,
+  currentValue: PropTypes.object
 }
 
-export default MultiSelect
+export default memo(MultiSelectField)

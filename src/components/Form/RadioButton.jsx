@@ -56,7 +56,7 @@ const RadioButton = ({
 RadioButton.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.string,
   checkedValue: PropTypes.string,
   required: PropTypes.bool,
   handleChange: PropTypes.func

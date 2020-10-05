@@ -1,16 +1,22 @@
-import React, { useContext } from 'react'
+import React, { useContext, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 
-const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required = false }) => {
-  const state = useContext(FormStateContext)
+const NumberField = ({
+  label,
+  name,
+  placeholder,
+  currentValue,
+  min = 0,
+  max = 1000000,
+  step = 1,
+  required = false
+}) => {
   const dispatch = useContext(FormDispatchContext)
 
   const handleChange = (evt) => {
-    dispatch({ type: `change_${name}`, payload: evt.target.value })
+    dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
   }
-
-  const value = Number(state[name])
 
   return (
     <div className="mb-4 flex flex-col">
@@ -23,10 +29,11 @@ const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required =
         type="number"
         id={name}
         name={name}
-        value={value}
+        value={currentValue}
         min={min}
         max={max}
         step={step}
+        placeholder={placeholder}
         onChange={handleChange}
       />
     </div>
@@ -36,10 +43,12 @@ const NumberField = ({ label, name, min = 0, max = 1000000, step = 1, required =
 NumberField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
+  currentValue: PropTypes.string,
+  placeholder: PropTypes.string,
   min: PropTypes.number,
   max: PropTypes.number,
   step: PropTypes.number,
   required: PropTypes.bool
 }
 
-export default NumberField
+export default memo(NumberField)

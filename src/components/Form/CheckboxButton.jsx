@@ -74,6 +74,7 @@ const CheckboxButton = ({
           value={value}
           checked={checkedValue}
           tabIndex="-1"
+          required={required}
         />
       </label>
     </span>
@@ -83,7 +84,7 @@ const CheckboxButton = ({
 CheckboxButton.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.string,
   checkedValue: PropTypes.bool,
   required: PropTypes.bool,
   handleChange: PropTypes.func

@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { memo } from 'react'
 import PropTypes from 'prop-types'
 
-const MultiSelectItemsSelected = ({ items, handleClick }) => {
+const MultiSelectCheckedOptions = ({ items, handleClick }) => {
   return (
     <div className="flex flex-wrap gap-1">
       {items.map((item) => (
@@ -9,7 +9,7 @@ const MultiSelectItemsSelected = ({ items, handleClick }) => {
           className="px-1 py-1 bg-gray-200 text-sm text-gray-700 font-light rounded inline-flex items-center"
           key={item.value}
         >
-          <p className="mr-1">{item.label}</p>
+          <p className="mr-1">{item.title}</p>
           <button
             className="bg-red-600 text-white rounded-full duration-200 hover:bg-red-700 focus:outline-none focus:shadow-outline"
             type="button"
@@ -37,12 +37,14 @@ const MultiSelectItemsSelected = ({ items, handleClick }) => {
   )
 }
 
-MultiSelectItemsSelected.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.number
-  })),
+MultiSelectCheckedOptions.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.string
+    })
+  ),
   handleClick: PropTypes.func
 }
 
-export default MultiSelectItemsSelected
+export default memo(MultiSelectCheckedOptions)

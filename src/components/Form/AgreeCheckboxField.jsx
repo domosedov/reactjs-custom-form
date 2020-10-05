@@ -1,9 +1,8 @@
-import React, { Fragment, useContext } from 'react'
-import { FormDispatchContext, FormStateContext } from './context'
+import React, { Fragment, useContext, memo } from 'react'
+import { FormDispatchContext } from './context'
 import PropTypes from 'prop-types'
 
-const AgreeCheckboxField = ({ name, required = false }) => {
-  const state = useContext(FormStateContext)
+const AgreeCheckboxField = ({ name, currentValue, required = false }) => {
   const dispatch = useContext(FormDispatchContext)
   const label = (
     <Fragment>
@@ -12,7 +11,7 @@ const AgreeCheckboxField = ({ name, required = false }) => {
     </Fragment>
   )
   const handleChange = () => {
-    dispatch({ type: 'change_agreeOffer' })
+    dispatch({ type: 'CHANGE_AGREE', payload: { name } })
   }
 
   return (
@@ -26,10 +25,10 @@ const AgreeCheckboxField = ({ name, required = false }) => {
         <div
           role="checkbox"
           aria-labelledby={name}
-          aria-checked={state.agreeOffer}
+          aria-checked={currentValue}
           tabIndex="0"
           className={`${
-            state.agreeOffer
+            currentValue
               ? 'bg-teal-400 border-transparent'
               : 'bg-white border-indigo-500'
           } border-2 rounded cursor-pointer text-white w-8 h-8 flex items-center justify-center duration-200 focus:outline-none focus:shadow-outline`}
@@ -58,7 +57,8 @@ const AgreeCheckboxField = ({ name, required = false }) => {
 
 AgreeCheckboxField.propTypes = {
   name: PropTypes.string,
+  currentValue: PropTypes.bool,
   required: PropTypes.bool
 }
 
-export default AgreeCheckboxField
+export default memo(AgreeCheckboxField)
