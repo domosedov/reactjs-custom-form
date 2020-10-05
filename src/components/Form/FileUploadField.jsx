@@ -7,7 +7,6 @@ const FileUploadField = ({
   name = '',
   required = false
 }) => {
-  // const state = useContext(FormStateContext)
   const dispatch = useContext(FormDispatchContext)
   const [imageSource, setImageSource] = useState('')
   const fileRef = useRef(null)
@@ -38,8 +37,6 @@ const FileUploadField = ({
       setImageSource('')
     }
   }, [currentValue])
-
-  console.log('render', name)
 
   return (
     <div className="h-full flex flex-col pb-4">

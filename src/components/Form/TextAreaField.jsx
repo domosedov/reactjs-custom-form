@@ -1,13 +1,21 @@
-import React, { useContext } from 'react'
+import React, { useContext, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext, FormStateContext } from './context'
+import { FormDispatchContext } from './context'
 
-const TextAreaField = ({ label, name, required = false, type = 'text' }) => {
-  const state = useContext(FormStateContext)
+const TextAreaField = ({
+  label = '',
+  name = '',
+  currentValue = '',
+  placeholder = '',
+  required = false
+}) => {
   const dispatch = useContext(FormDispatchContext)
 
   const handleChange = (evt) => {
-    dispatch({ type: `change_${name}`, payload: evt.target.value })
+    dispatch({
+      type: `CHANGE_${name}`,
+      payload: { value: evt.target.value, name }
+    })
   }
 
   return (
@@ -18,11 +26,11 @@ const TextAreaField = ({ label, name, required = false, type = 'text' }) => {
       </label>
       <textarea
         className="border px-2 py-2 rounded md:px-1 md:py-1 duration-200 hover:border-indigo-300 focus:outline-none focus:shadow-outline text-gray-700 font-light"
-        type={type}
         id={name}
         name={name}
-        value={state[name]}
+        value={currentValue}
         onChange={handleChange}
+        placeholder={placeholder}
       />
     </div>
   )
@@ -31,8 +39,9 @@ const TextAreaField = ({ label, name, required = false, type = 'text' }) => {
 TextAreaField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
-  type: PropTypes.string,
+  currentValue: PropTypes.string,
+  placeholder: PropTypes.string,
   required: PropTypes.bool
 }
 
-export default TextAreaField
+export default memo(TextAreaField)

@@ -1,10 +1,10 @@
-import React, { useRef, useContext, useEffect, useState } from 'react'
-import { FormDispatchContext, FormStateContext } from './context'
+import React, { useRef, useContext, useEffect, useState, memo } from 'react'
+import PropTypes from 'prop-types'
+import { FormDispatchContext } from './context'
 import { readAsDataURL } from './helpers'
 
-const UploadFilesField = () => {
+const MultipleFilesUploadField = ({ label, name, required, currentValue }) => {
   const uploadButtonRef = useRef(null)
-  const state = useContext(FormStateContext)
   const dispatch = useContext(FormDispatchContext)
   const [imageSources, setImageSourses] = useState([])
 
@@ -18,28 +18,27 @@ const UploadFilesField = () => {
   const handleChange = (evt) => {
     if (evt.target.files.length) {
       dispatch({
-        type: 'set_documents',
-        payload: Array.from(evt.target.files)
+        type: 'SET_FILES',
+        payload: { value: Array.from(evt.target.files), name }
       })
     }
   }
 
   const handleEmptyButtonClick = () => {
-    dispatch(
-      { type: 'empty_documents' }
-    )
+    dispatch({ type: 'UNSET_FILES', payload: { name } })
   }
 
   useEffect(() => {
-    if (state.documents.length) {
-      Promise.all(state.documents.map(doc => readAsDataURL(doc)))
-        .then(urls => {
+    if (currentValue.length) {
+      Promise.all(currentValue.map((doc) => readAsDataURL(doc)))
+        .then((urls) => {
           setImageSourses(urls)
-        }).catch(console.error)
+        })
+        .catch(console.error)
     } else {
       setImageSourses([])
     }
-  }, [state.documents])
+  }, [currentValue])
 
   return (
     <div className="h-full flex flex-col pb-4">
@@ -50,12 +49,19 @@ const UploadFilesField = () => {
         Документы
       </label>
       <span className="text-gray-600 font-light text-sm">
-        Например документы об образовании, дипломы, сертификаты, награды и т.д.
+        Например фото/сканы документов об образовании, дипломов, сертификатов,
+        наград и т.д.
       </span>
-      <span className="text-gray-600 font-light text-sm mb-2 border border-dashed px-1 py-1">
+      <span className="text-gray-600 font-light text-sm mb-2 border border-dashed px-2 py-2">
         Чтобы добавить сразу несколько файлов, выбирайте их удерживая клавишу{' '}
-        <b className="font-normal text-gray-800">&quot;CTRL&quot;</b> или{' '}
-        <b className="font-normal text-gray-800">&quot;SHIFT&quot;</b>
+        <b className="text-xs inline-block font-semibold font-mono text-gray-700 border p-1 bg-gray-100 rounded-md shadow-sm">
+          ⌘ COMMAND
+        </b>{' '}
+        на Mac или{' '}
+        <b className="text-xs inline-block font-semibold font-mono text-gray-700 border p-1 bg-gray-100 rounded-md shadow-sm">
+          CTRL
+        </b>{' '}
+        на Windows/Linux.
       </span>
       <div className="flex items-center flex-wrap gap-1 mb-2">
         {imageSources.length > 0 &&
@@ -91,7 +97,7 @@ const UploadFilesField = () => {
             />
           </svg>
         </button>
-        {state.documents.length > 0 && (
+        {currentValue.length > 0 && (
           <button
             className="inline-flex items-center font-light px-2 py-1 bg-red-600 text-white rounded duration-200 hover:bg-red-500 focus:outline-none focus:shadow-outline"
             type="button"
@@ -130,4 +136,11 @@ const UploadFilesField = () => {
   )
 }
 
-export default UploadFilesField
+MultipleFilesUploadField.propTypes = {
+  label: PropTypes.string,
+  name: PropTypes.string,
+  required: PropTypes.bool,
+  currentValue: PropTypes.array
+}
+
+export default memo(MultipleFilesUploadField)

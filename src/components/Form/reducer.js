@@ -79,6 +79,7 @@ export const immerReducer = (draft, action) => {
     'CHANGE_subjects'
   ]
 
+  const CHANGE_AGREE = 'CHANGE_AGREE'
   const SET_FILE = 'SET_FILE'
   const UNSET_FILE = 'UNSET_FILE'
   const SET_FILES = 'SET_FILES'
@@ -98,5 +99,7 @@ export const immerReducer = (draft, action) => {
     draft[action.payload.name] = action.payload.value
   } else if (action.type === UNSET_FILES) {
     draft[action.payload.name] = []
+  } else if (action.type === CHANGE_AGREE) {
+    draft[action.payload.name] = !draft[action.payload.name]
   }
 }

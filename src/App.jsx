@@ -6,7 +6,7 @@ const App = () => {
     <div className="bg-gray-200 h-full min-h-screen">
       <div className="container mx-auto px-4">
         <div className="text-6xl text-center text-indigo-700">
-          Hello React + TailwindCSS
+          React Form + TailwindCSS
         </div>
         <Form />
       </div>
