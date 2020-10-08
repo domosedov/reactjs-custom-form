@@ -1,14 +1,16 @@
 import React, { useContext, useCallback, memo } from 'react'
 import PropTypes from 'prop-types'
 import CheckboxButton from './CheckboxButton'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../../context'
 
 const CheckboxGroupField = ({
   options = [],
   name = '',
   currentValue = {},
   label,
-  required = false
+  required = false,
+  isInvalid = false,
+  handleFocus = f => f
 }) => {
   const dispatch = useContext(FormDispatchContext)
 
@@ -23,7 +25,7 @@ const CheckboxGroupField = ({
   )
 
   return (
-    <div className="mb-4 flex flex-col">
+    <div className={`${isInvalid && 'shadow-error'} mb-4 flex flex-col`}>
       <span className="text-gray-800 font-light mb-1">
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -37,6 +39,7 @@ const CheckboxGroupField = ({
             key={item.value}
             value={item.value}
             handleChange={handleChange}
+            handleFocus={handleFocus}
           />
         ))}
       </div>
@@ -54,7 +57,9 @@ CheckboxGroupField.propTypes = {
   required: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string,
-  currentValue: PropTypes.object
+  currentValue: PropTypes.object,
+  isInvalid: PropTypes.bool,
+  handleFocus: PropTypes.func
 }
 
 export default memo(CheckboxGroupField)

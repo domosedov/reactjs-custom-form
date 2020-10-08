@@ -1,11 +1,13 @@
 import React, { useRef, useState, useContext, useEffect, memo } from 'react'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../context'
 
 const FileUploadField = ({
   currentValue = null,
   label = '',
   name = '',
-  required = false
+  required = false,
+  isInvalid = false,
+  handleFocus = (f) => f
 }) => {
   const dispatch = useContext(FormDispatchContext)
   const [imageSource, setImageSource] = useState('')
@@ -18,7 +20,10 @@ const FileUploadField = ({
 
   const handleChange = (evt) => {
     if (evt.target.files.length) {
-      dispatch({ type: 'SET_FILE', payload: { value: evt.target.files[0], name } })
+      dispatch({
+        type: 'SET_FILE',
+        payload: { value: evt.target.files[0], name }
+      })
     }
   }
 
@@ -39,7 +44,10 @@ const FileUploadField = ({
   }, [currentValue])
 
   return (
-    <div className="h-full flex flex-col pb-4">
+    <div
+      className={`${isInvalid && 'shadow-error'} h-full flex flex-col pb-4`}
+      onClick={() => handleFocus(name)}
+    >
       <label className="text-gray-800 font-light mb-1" htmlFor="photo">
         {label}
         {required && <span className="text-red-600">*</span>}

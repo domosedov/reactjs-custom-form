@@ -1,6 +1,6 @@
 import React, { useContext, useCallback, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../../context'
 import RadioButton from './RadioButton'
 
 const RadioGroupField = ({
@@ -8,7 +8,9 @@ const RadioGroupField = ({
   name = '',
   label = '',
   required = false,
-  currentValue = ''
+  currentValue = '',
+  isInvalid = false,
+  handleFocus = f => f
 }) => {
   const dispatch = useContext(FormDispatchContext)
 
@@ -20,7 +22,7 @@ const RadioGroupField = ({
   )
 
   return (
-    <div className="mb-4 flex flex-col">
+    <div className={`${isInvalid && 'shadow-error'} mb-4 flex flex-col`}>
       <span className="text-gray-800 font-light mb-1">
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -34,6 +36,7 @@ const RadioGroupField = ({
             key={item.value}
             value={item.value}
             handleChange={handleChange}
+            handleFocus={handleFocus}
           />
         ))}
       </div>
@@ -51,7 +54,9 @@ RadioGroupField.propTypes = {
   required: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string,
-  currentValue: PropTypes.string
+  currentValue: PropTypes.string,
+  isInvalid: PropTypes.bool,
+  handleFocus: PropTypes.func
 }
 
 export default memo(RadioGroupField)

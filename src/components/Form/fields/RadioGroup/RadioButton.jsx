@@ -7,7 +7,8 @@ const RadioButton = ({
   value,
   checkedValue,
   handleChange,
-  required = false
+  required = false,
+  handleFocus
 }) => {
   const radioRef = useRef(null)
 
@@ -28,6 +29,7 @@ const RadioButton = ({
       aria-checked={String(value) === checkedValue}
       onKeyPress={handleFakeRadioButtonKeyPress}
       onClick={handleFakeRadioButtonClick}
+      onFocus={() => handleFocus(name)}
       tabIndex="0"
       className={`${
         String(value) === checkedValue
@@ -59,7 +61,8 @@ RadioButton.propTypes = {
   value: PropTypes.string,
   checkedValue: PropTypes.string,
   required: PropTypes.bool,
-  handleChange: PropTypes.func
+  handleChange: PropTypes.func,
+  handleFocus: PropTypes.func
 }
 
 export default memo(RadioButton)

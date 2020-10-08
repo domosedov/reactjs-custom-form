@@ -12,10 +12,25 @@ FieldType {
 }
 */
 
+export const computeInitialErrors = (...fields) => {
+  const initialState = {}
+
+  if (fields.length > 0) {
+    fields.forEach(field => {
+      initialState[field.name] = {
+        message: field.errorMessage,
+        label: field.label
+      }
+    })
+  }
+
+  return initialState
+}
+
 export const computeInitialState = (...fields) => {
   const initialState = {}
 
-  if (fields.length) {
+  if (fields.length > 0) {
     fields.forEach((field) => {
       switch (field.type) {
         case 'select':

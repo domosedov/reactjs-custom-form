@@ -1,9 +1,9 @@
 import React, { useRef, useContext, useEffect, useState, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext } from './context'
-import { readAsDataURL } from './helpers'
+import { FormDispatchContext } from '../context'
+import { readAsDataURL } from '../helpers'
 
-const MultipleFilesUploadField = ({ label, name, required, currentValue }) => {
+const MultipleFilesUploadField = ({ label, name, required, currentValue, isInvalid = false }) => {
   const uploadButtonRef = useRef(null)
   const dispatch = useContext(FormDispatchContext)
   const [imageSources, setImageSourses] = useState([])
@@ -41,7 +41,7 @@ const MultipleFilesUploadField = ({ label, name, required, currentValue }) => {
   }, [currentValue])
 
   return (
-    <div className="h-full flex flex-col pb-4">
+    <div className={`${isInvalid && 'shadow-error'} h-full flex flex-col pb-4`}>
       <label
         className="text-gray-800 font-light mb-1 pointer-events-none"
         htmlFor="documents"
@@ -61,7 +61,7 @@ const MultipleFilesUploadField = ({ label, name, required, currentValue }) => {
         <b className="text-xs inline-block font-semibold font-mono text-gray-700 border p-1 bg-gray-100 rounded-md shadow-sm">
           CTRL
         </b>{' '}
-        на Windows/Linux.
+        на Windows/Linux. Максимальный размер файла - 5Мб.
       </span>
       <div className="flex items-center flex-wrap gap-1 mb-2">
         {imageSources.length > 0 &&
@@ -140,7 +140,8 @@ MultipleFilesUploadField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   required: PropTypes.bool,
-  currentValue: PropTypes.array
+  currentValue: PropTypes.array,
+  isInvalid: PropTypes.bool
 }
 
 export default memo(MultipleFilesUploadField)

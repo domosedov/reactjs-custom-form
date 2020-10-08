@@ -1,8 +1,8 @@
 import React, { useContext, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../context'
 
-const DatePickerField = ({ label = '', name = '', currentValue = '', required = false, placeholder = '' }) => {
+const DatePickerField = ({ label = '', name = '', currentValue = '', required = false, placeholder = '', isInvalid = false, handleFocus = f => f }) => {
   const dispatch = useContext(FormDispatchContext)
   const handleChange = (evt) => {
     dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
@@ -11,7 +11,7 @@ const DatePickerField = ({ label = '', name = '', currentValue = '', required = 
   const currentDate = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   return (
-    <div className="mb-4 flex flex-col">
+    <div className={`${isInvalid && 'shadow-error'} mb-4 flex flex-col`}>
       <label className="text-gray-800 font-light mb-1" htmlFor={name}>
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -25,6 +25,7 @@ const DatePickerField = ({ label = '', name = '', currentValue = '', required = 
         onChange={handleChange}
         max={currentDate}
         placeholder={placeholder}
+        onFocus={handleFocus}
       />
     </div>
   )
@@ -35,7 +36,9 @@ DatePickerField.propTypes = {
   name: PropTypes.string,
   placeholder: PropTypes.string,
   currentValue: PropTypes.string,
-  required: PropTypes.bool
+  required: PropTypes.bool,
+  handleFocus: PropTypes.func,
+  isInvalid: PropTypes.bool
 }
 
 export default memo(DatePickerField)

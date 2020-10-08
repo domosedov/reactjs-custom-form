@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useRef, useState, useEffect, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
 import MultiSelectOption from './MultiSelectOption'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../../context'
 import MultiSelectCheckedOptions from './MultiSelectCheckedOptions'
 
 const computeSelectedItems = (currentValue, options) => {
@@ -15,7 +15,9 @@ const MultiSelectField = ({
   name = '',
   currentValue = {},
   label,
-  required = false
+  required = false,
+  isInvalid = false,
+  handleFocus = (f) => f
 }) => {
   const dispatch = useContext(FormDispatchContext)
   const [isOpen, setIsOpen] = useState(false)
@@ -64,7 +66,7 @@ const MultiSelectField = ({
   }, [itemsListRef, buttonRef])
 
   return (
-    <div className="mb-4 flex flex-col">
+    <div className={`${isInvalid && 'shadow-error'} mb-4 flex flex-col`}>
       <span className="text-gray-800 font-light mb-1">
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -80,7 +82,9 @@ const MultiSelectField = ({
         ) : (
           <div
             ref={areaButtonRef}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen(!isOpen); handleFocus(name)
+            }}
             className="cursor-pointer px-2 py-2 w-full h-full min-h-10"
           >
             <span className="text-gray-500 font-light">Выбрать...</span>
@@ -91,6 +95,7 @@ const MultiSelectField = ({
           ref={buttonRef}
           className="w-6 text-gray-500 bg-gray-100 duration-200 hover:text-gray-800 focus:outline-none focus:shadow-outline"
           onClick={() => setIsOpen(!isOpen)}
+          onFocus={() => handleFocus(name)}
           type="button"
         >
           <svg
@@ -153,7 +158,9 @@ MultiSelectField.propTypes = {
   required: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string,
-  currentValue: PropTypes.object
+  currentValue: PropTypes.object,
+  isInvalid: PropTypes.bool,
+  handleFocus: PropTypes.func
 }
 
 export default memo(MultiSelectField)

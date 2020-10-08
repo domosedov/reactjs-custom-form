@@ -1,17 +1,28 @@
 import React, { useContext, Fragment, memo } from 'react'
 import PropTypes from 'prop-types'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../../context'
 import SelectOption from './SelectOption'
 
-const SelectField = ({ options, label, name, required, currentValue }) => {
+const SelectField = ({
+  options,
+  label,
+  name,
+  required,
+  currentValue,
+  isInvalid,
+  handleFocus
+}) => {
   const dispatch = useContext(FormDispatchContext)
 
-  const handleChange = evt => {
-    dispatch({ type: `CHANGE_${name}`, payload: { value: evt.target.value, name } })
+  const handleChange = (evt) => {
+    dispatch({
+      type: `CHANGE_${name}`,
+      payload: { value: evt.target.value, name }
+    })
   }
 
   return (
-    <div className="mb-4 flex flex-col">
+    <div className={`${isInvalid && 'shadow-error'} mb-4 flex flex-col`}>
       <label className="text-gray-800 font-light mb-1" htmlFor={name}>
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -24,6 +35,7 @@ const SelectField = ({ options, label, name, required, currentValue }) => {
         id={name}
         onChange={handleChange}
         value={currentValue}
+        onFocus={handleFocus}
       >
         <Fragment>
           <option className="text-gray-400 bg-gray-200" value="">
@@ -48,7 +60,9 @@ SelectField.propTypes = {
   required: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string,
-  currentValue: PropTypes.string
+  currentValue: PropTypes.string,
+  isInvalid: PropTypes.bool,
+  handleFocus: PropTypes.func
 }
 
 export default memo(SelectField)

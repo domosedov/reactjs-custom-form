@@ -12,5 +12,9 @@
         .max-h-64 {
             max-height: 16rem;
         }
+        .shadow-error {
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+            border-radius: 0.25rem;
+        }
     }
 }

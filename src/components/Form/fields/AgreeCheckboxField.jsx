@@ -1,13 +1,21 @@
 import React, { Fragment, useContext, memo } from 'react'
-import { FormDispatchContext } from './context'
+import { FormDispatchContext } from '../context'
 import PropTypes from 'prop-types'
 
-const AgreeCheckboxField = ({ name, currentValue, required = false }) => {
+const AgreeCheckboxField = ({
+  name,
+  currentValue,
+  required = false,
+  isInvalid = false,
+  handleFocus = f => f
+}) => {
   const dispatch = useContext(FormDispatchContext)
   const label = (
     <Fragment>
       На обработку персональных данных и с{' '}
-      <a className="font-normal text-indigo-600 underline" href={'#'}>договором оферты</a>
+      <a className="font-normal text-indigo-600 underline" href={'#'}>
+        договором оферты
+      </a>
     </Fragment>
   )
   const handleChange = () => {
@@ -15,7 +23,7 @@ const AgreeCheckboxField = ({ name, currentValue, required = false }) => {
   }
 
   return (
-    <div className="mb-4">
+    <div className={`${isInvalid && 'shadow-error'} mb-4`}>
       <div className="text-gray-800 font-light mb-1 md:text-center">
         {label}
         {required && <span className="text-red-600">*</span>}
@@ -34,6 +42,7 @@ const AgreeCheckboxField = ({ name, currentValue, required = false }) => {
           } border-2 rounded cursor-pointer text-white w-8 h-8 flex items-center justify-center duration-200 focus:outline-none focus:shadow-outline`}
           onKeyPress={handleChange}
           onClick={handleChange}
+          onFocus={() => handleFocus(name)}
         >
           <svg
             className="pointer-events-none w-8 h-8"
@@ -58,7 +67,9 @@ const AgreeCheckboxField = ({ name, currentValue, required = false }) => {
 AgreeCheckboxField.propTypes = {
   name: PropTypes.string,
   currentValue: PropTypes.bool,
-  required: PropTypes.bool
+  required: PropTypes.bool,
+  isInvalid: PropTypes.bool,
+  handleFocus: PropTypes.func
 }
 
 export default memo(AgreeCheckboxField)

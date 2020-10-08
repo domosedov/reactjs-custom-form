@@ -1,19 +1,20 @@
-import React, { useReducer, useState, useEffect } from 'react'
+import React, { useReducer, useState, useEffect, useCallback } from 'react'
 import produce from 'immer'
 import { FormDispatchContext, FormStateContext } from './context'
-import MultiSelectField from './MultiSelectField'
-import TextField from './TextField'
-import DatePickerField from './DatePickerField'
-import TextAreaField from './TextAreaField'
-import NumberField from './NumberField'
-import RadioGroupField from './RadioGroupField'
-import SelectField from './SelectField'
-import AgreeCheckboxField from './AgreeCheckboxField'
-import FileUploadField from './FileUploadField'
-import CheckboxGroupField from './CheckboxGroupField'
-import MultipleFilesUploadField from './MultipleFilesUploadField'
+import MultiSelectField from './fields/MultiSelect/MultiSelectField'
+import TextField from './fields/TextField'
+import DatePickerField from './fields/DatePickerField'
+import TextAreaField from './fields/TextAreaField'
+import NumberField from './fields/NumberField'
+import RadioGroupField from './fields/RadioGroup/RadioGroupField'
+import SelectField from './fields/Select/SelectField'
+import AgreeCheckboxField from './fields/AgreeCheckboxField'
+import FileUploadField from './fields/FileUploadField'
+import CheckboxGroupField from './fields/CheckboxGroup/CheckboxGroupField'
+import MultipleFilesUploadField from './fields/MultipleFilesUploadField'
 import Validator from './validator'
-import { computeInitialState, immerReducer } from './reducer'
+import { computeInitialErrors, computeInitialState, immerReducer } from './reducer'
+import ValidationErrors from './ValidationErrors'
 
 const curriedReducerFunction = produce(immerReducer)
 
@@ -26,7 +27,8 @@ const nameField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Введите имя',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const middlenameField = {
@@ -38,7 +40,8 @@ const middlenameField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Введите отчество',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const lastnameField = {
@@ -50,7 +53,8 @@ const lastnameField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Введите фамилию',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const photoField = {
@@ -62,7 +66,8 @@ const photoField = {
   required: false,
   options: null,
   defaultValue: null,
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Допускаются файлы jpeg, png. Масимальный размер - 5Мб'
 }
 
 const genderField = {
@@ -77,7 +82,8 @@ const genderField = {
     { title: 'Женский', value: '1223' }
   ],
   defaultValue: '',
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать пол.'
 }
 
 const dateField = {
@@ -89,7 +95,8 @@ const dateField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: 'Дата в формате 2000-12-31'
+  placeholder: 'Дата в формате 2000-12-31',
+  errorMessage: 'Необходимо указать корректную дату.'
 }
 
 const cityField = {
@@ -104,7 +111,8 @@ const cityField = {
     { title: 'Химки', value: '1223123' }
   ],
   defaultValue: '',
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать город.'
 }
 
 const metroField = {
@@ -119,7 +127,8 @@ const metroField = {
     { title: 'Спартак', value: '1223423' }
   ],
   defaultValue: '',
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать метро.'
 }
 
 const placesField = {
@@ -135,7 +144,8 @@ const placesField = {
     { title: 'Дистанционно', value: '122345523' }
   ],
   defaultValue: {},
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать хотя бы одно место.'
 }
 
 const areaField = {
@@ -147,7 +157,8 @@ const areaField = {
   required: false,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Например Куркино',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const phoneField = {
@@ -159,7 +170,8 @@ const phoneField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Например +7 999 999 99 99',
+  errorMessage: 'Необходимо ввести корректный номер телефона.'
 }
 
 const emailField = {
@@ -171,7 +183,8 @@ const emailField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: ''
+  placeholder: 'Например example@mail.com',
+  errorMessage: 'Необходимо ввести корректную почту.'
 }
 
 const subjectsField = {
@@ -187,7 +200,8 @@ const subjectsField = {
     { title: 'История', value: '122345523' }
   ],
   defaultValue: {},
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать минимум один предмет.'
 }
 
 const studentsField = {
@@ -203,7 +217,8 @@ const studentsField = {
     { title: 'Старшие классы', value: '122345523' }
   ],
   defaultValue: {},
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо выбрать минимум одну категорию.'
 }
 
 const statusField = {
@@ -218,19 +233,21 @@ const statusField = {
     { title: 'Школьный учитель', value: '1223423' }
   ],
   defaultValue: '',
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо указать статус.'
 }
 
 const experianceField = {
   name: 'experiance',
-  label: 'Ваш стаж',
+  label: 'Ваш стаж (с какого года работаете)',
   multiple: false,
   type: 'number',
   valueType: 'string',
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: 'Введит год начала деятельности'
+  placeholder: 'Введит год начала деятельности',
+  errorMessage: 'Необходимо ввести год начала деятельности для корректного рассчета стажа.'
 }
 
 const educationField = {
@@ -242,7 +259,9 @@ const educationField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: 'Укажите где учились'
+  placeholder:
+    'Укажите какие учебные заведения, факультеты и в каком году вы заканчилвали, а также продолжительность учебы в этих заведениях.',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const descriptionField = {
@@ -254,7 +273,8 @@ const descriptionField = {
   required: false,
   options: null,
   defaultValue: '',
-  placeholder: 'Укажите где учились'
+  placeholder: 'Здесь вы можете указать любую дополнительную информацию.',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const rateField = {
@@ -266,7 +286,8 @@ const rateField = {
   required: true,
   options: null,
   defaultValue: '',
-  placeholder: 'Укажите стоимость'
+  placeholder: 'Укажите стоимость',
+  errorMessage: 'Поле не может быть пустым.'
 }
 
 const documentsField = {
@@ -278,7 +299,8 @@ const documentsField = {
   required: false,
   options: null,
   defaultValue: [],
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Допускаются файлы jpeg, png. Масимальный размер - 5Мб.'
 }
 
 const agreeOfferField = {
@@ -290,11 +312,32 @@ const agreeOfferField = {
   required: true,
   options: null,
   defaultValue: false,
-  placeholder: ''
+  placeholder: '',
+  errorMessage: 'Необходимо согласие.'
 }
 
 const Form = () => {
-  const [inputErrors, setInputErrors] = useState({})
+  const [inputErrors, setInputErrors] = useState(({}))
+  const [errorMessages] = useState(() => computeInitialErrors(lastnameField,
+    nameField,
+    middlenameField,
+    genderField,
+    dateField,
+    cityField,
+    metroField,
+    placesField,
+    areaField,
+    phoneField,
+    emailField,
+    subjectsField,
+    studentsField,
+    statusField,
+    experianceField,
+    descriptionField,
+    educationField,
+    rateField,
+    documentsField,
+    agreeOfferField))
   const [data, setData] = useState(null)
   const [state, dispatch] = useReducer(curriedReducerFunction, {}, () => {
     return computeInitialState(
@@ -314,6 +357,7 @@ const Form = () => {
       statusField,
       experianceField,
       descriptionField,
+      educationField,
       rateField,
       documentsField,
       agreeOfferField
@@ -329,68 +373,97 @@ const Form = () => {
       const numberFields = ['gender', 'rate', 'experiance', 'city', 'metro', 'status']
       const multiSelectFields = ['subjects', 'students', 'places']
 
+      const errors = {}
+
       if (!Validator.checkAgreeButton(state.agreeOffer)) {
-        setInputErrors((prevState) => ({ ...prevState, agreeOffer: true }))
+        errors.agreeOffer = true
       }
 
       if (!Validator.checkEmail(state.email)) {
-        setInputErrors((prevState) => ({ ...prevState, email: true }))
+        errors.email = true
       }
 
       if (!Validator.checkPhone(state.phone)) {
-        setInputErrors((prevState) => ({ ...prevState, phone: true }))
+        errors.phone = true
       }
 
       if (!Validator.checkDate(state.dateOfBirth)) {
-        setInputErrors((prevState) => ({ ...prevState, dateOfBirth: true }))
+        errors.dateOfBirth = true
       }
 
       for (const field of textFields) {
         if (!Validator.checkTextInput(state[field])) {
-          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+          errors[field] = true
         }
       }
       for (const field of numberFields) {
         if (!Validator.checkNumberInput(state[field])) {
-          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+          errors[field] = true
         }
       }
       for (const field of multiSelectFields) {
         if (!Validator.checkMultiSelectInput(state[field])) {
-          setInputErrors((prevState) => ({ ...prevState, [field]: true }))
+          errors[field] = true
         }
       }
 
       if (state.description.length > 0) {
         if (!Validator.checkTextInput(state.description)) {
-          setInputErrors((prevState) => ({ ...prevState, description: true }))
+          errors.description = true
         }
       }
 
       if (state.area.length > 0) {
         if (!Validator.checkTextInput(state.area)) {
-          setInputErrors((prevState) => ({ ...prevState, area: true }))
+          errors.area = true
         }
       }
 
       if (state.photo) {
         if (!Validator.checkFileInput(state.photo)) {
-          setInputErrors((prevState) => ({ ...prevState, photo: true }))
+          errors.photo = true
         }
       }
 
       if (state.documents.length) {
         for (const doc of state.documents) {
           if (!Validator.checkFileInput(doc)) {
-            setInputErrors((prevState) => ({ ...prevState, documents: true }))
+            errors.documents = true
           }
         }
       }
+
+      return errors
     }
 
-    validate(state)
-    setData(state)
+    const errors = validate(state)
+
+    if (Object.keys(errors).length > 0) {
+      setInputErrors(() => errors)
+    } else {
+      setInputErrors(() => ({}))
+      setData(state)
+    }
   }
+
+  const handleFocus = useCallback(
+    (evt) => {
+      if (Object.prototype.hasOwnProperty.call(inputErrors, evt.target.name)) {
+        const { name } = evt.target
+        setInputErrors((prevState) => ({ ...prevState, [name]: false }))
+      }
+    },
+    [inputErrors]
+  )
+
+  const handleFocusCustom = useCallback(
+    (name) => {
+      if (Object.prototype.hasOwnProperty.call(inputErrors, name)) {
+        setInputErrors((prevState) => ({ ...prevState, [name]: false }))
+      }
+    },
+    [inputErrors]
+  )
 
   useEffect(() => {
     console.log(data)
@@ -404,6 +477,12 @@ const Form = () => {
           <h1 className="bg-indigo-600 uppercase tracking-tight text-gray-100 font-semibold text-2xl text-center px-4 py-4 rounded-t-lg">
             Создать профиль репетитора
           </h1>
+          {Object.values(inputErrors).some((v) => v === true) && (
+            <ValidationErrors
+              messages={errorMessages}
+              inputErrors={inputErrors}
+            />
+          )}
           <form
             className="rounded-b-lg px-4 py-4 grid grid-cols-6"
             onSubmit={handleSubmit}
@@ -411,22 +490,31 @@ const Form = () => {
             <div className="col-span-6 grid grid-cols-2 grid-rows-2 gap-4">
               <div className="col-start-1 col-end-3 row-start-1 row-end-2 md:col-end-2 md:row-end-3">
                 <TextField
-                  label={nameField.label}
-                  name={nameField.name}
-                  required={nameField.required}
-                  currentValue={state[nameField.name]}
-                />
-                <TextField
                   label={lastnameField.label}
                   name={lastnameField.name}
                   required={lastnameField.required}
                   currentValue={state[lastnameField.name]}
+                  isInvalid={inputErrors[lastnameField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={lastnameField.placeholder}
+                />
+                <TextField
+                  label={nameField.label}
+                  name={nameField.name}
+                  required={nameField.required}
+                  currentValue={state[nameField.name]}
+                  isInvalid={inputErrors[nameField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={nameField.placeholder}
                 />
                 <TextField
                   label={middlenameField.label}
                   name={middlenameField.name}
                   required={middlenameField.required}
                   currentValue={state[middlenameField.name]}
+                  isInvalid={inputErrors[middlenameField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={middlenameField.placeholder}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -435,6 +523,8 @@ const Form = () => {
                   name={photoField.name}
                   required={photoField.required}
                   currentValue={state[photoField.name]}
+                  isInvalid={inputErrors[photoField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
             </div>
@@ -446,6 +536,8 @@ const Form = () => {
                   name={genderField.name}
                   required={genderField.required}
                   currentValue={state[genderField.name]}
+                  isInvalid={inputErrors[genderField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -455,6 +547,8 @@ const Form = () => {
                   required={dateField.required}
                   currentValue={state[dateField.name]}
                   placeholder={dateField.placeholder}
+                  isInvalid={inputErrors[dateField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
             </div>
@@ -466,6 +560,8 @@ const Form = () => {
                   name={cityField.name}
                   required={cityField.required}
                   currentValue={state[cityField.name]}
+                  isInvalid={inputErrors[cityField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -475,6 +571,8 @@ const Form = () => {
                   name={metroField.name}
                   required={metroField.required}
                   currentValue={state[metroField.name]}
+                  isInvalid={inputErrors[metroField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
             </div>
@@ -485,6 +583,9 @@ const Form = () => {
                   name={areaField.name}
                   required={areaField.required}
                   currentValue={state[areaField.name]}
+                  isInvalid={inputErrors[areaField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={areaField.placeholder}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -494,6 +595,8 @@ const Form = () => {
                   name={placesField.name}
                   required={placesField.required}
                   currentValue={state[placesField.name]}
+                  isInvalid={inputErrors[placesField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
             </div>
@@ -504,6 +607,9 @@ const Form = () => {
                   name={phoneField.name}
                   required={phoneField.required}
                   currentValue={state[phoneField.name]}
+                  isInvalid={inputErrors[phoneField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={phoneField.placeholder}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -512,6 +618,9 @@ const Form = () => {
                   name={emailField.name}
                   required={emailField.required}
                   currentValue={state[emailField.name]}
+                  isInvalid={inputErrors[emailField.name]}
+                  handleFocus={handleFocus}
+                  placeholder={emailField.placeholder}
                 />
               </div>
             </div>
@@ -523,6 +632,8 @@ const Form = () => {
                   name={subjectsField.name}
                   required={subjectsField.required}
                   currentValue={state[subjectsField.name]}
+                  isInvalid={inputErrors[subjectsField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -532,6 +643,8 @@ const Form = () => {
                   name={studentsField.name}
                   required={studentsField.required}
                   currentValue={state[studentsField.name]}
+                  isInvalid={inputErrors[studentsField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
             </div>
@@ -543,6 +656,8 @@ const Form = () => {
                   name={statusField.name}
                   required={statusField.required}
                   currentValue={state[statusField.name]}
+                  isInvalid={inputErrors[statusField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
               <div className="col-start-1 col-end-3 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -554,6 +669,8 @@ const Form = () => {
                   currentValue={state[experianceField.name]}
                   min={1900}
                   max={new Date().getFullYear()}
+                  isInvalid={inputErrors[experianceField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
             </div>
@@ -564,6 +681,8 @@ const Form = () => {
                 required={educationField.required}
                 currentValue={state[educationField.name]}
                 placeholder={educationField.placeholder}
+                isInvalid={inputErrors[educationField.name]}
+                handleFocus={handleFocus}
               />
             </div>
             <div className="col-span-6">
@@ -572,6 +691,7 @@ const Form = () => {
                 name={documentsField.name}
                 required={documentsField.required}
                 currentValue={state[documentsField.name]}
+                isInvalid={inputErrors[documentsField.name]}
               />
             </div>
             <div className="col-span-6">
@@ -581,6 +701,8 @@ const Form = () => {
                 required={descriptionField.required}
                 currentValue={state[descriptionField.name]}
                 placeholder={descriptionField.placeholder}
+                isInvalid={inputErrors[descriptionField.name]}
+                handleFocus={handleFocus}
               />
             </div>
 
@@ -594,6 +716,8 @@ const Form = () => {
                   currentValue={state[rateField.name]}
                   min={100}
                   max={1000000}
+                  isInvalid={inputErrors[rateField.name]}
+                  handleFocus={handleFocus}
                 />
               </div>
               <div className="col-start-1 col-end-5 row-start-2 row-end-3 md:col-start-2 md:row-start-1">
@@ -601,6 +725,8 @@ const Form = () => {
                   name={agreeOfferField.name}
                   required={agreeOfferField.required}
                   currentValue={state[agreeOfferField.name]}
+                  isInvalid={inputErrors[agreeOfferField.name]}
+                  handleFocus={handleFocusCustom}
                 />
               </div>
             </div>
